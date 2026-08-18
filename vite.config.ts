@@ -40,4 +40,12 @@ function githubPagesSpaFallback() {
 export default defineConfig({
   base: BASE,
   plugins: [react(), tailwindcss(), githubPagesSpaFallback()],
+  server: {
+    // strictPort, because the API only allows the exact origins it was deployed
+    // with. Vite's default is to quietly move to the next free port, and the
+    // symptom of that is every request failing CORS with nothing in the logs
+    // pointing at the port as the cause. Failing to start is far kinder.
+    port: 5173,
+    strictPort: true,
+  },
 })
