@@ -1,0 +1,44 @@
+// Cloudflare Worker config for the public registration site.
+//
+// Before this file existed, every one of these settings lived only in the
+// Cloudflare dashboard, which meant the deploy was not reproducible from the
+// repo and nobody could review a change to it. Wrangler reads this file during
+// Workers Builds, so what is committed here is what gets deployed.
+//
+// Only ONE wrangler config may exist. Wrangler resolves wrangler.jsonc, then
+// wrangler.json, then wrangler.toml, and having more than one is a footgun —
+// you edit the .toml, Wrangler reads the .jsonc, and nothing changes. JSONC is
+// Cloudflare's current default and is the one to keep.
+{
+  // MUST match the Worker that public.district80ac.com is bound to. A mismatch
+  // does not fail the build: Workers Builds cheerfully creates a *second*
+  // Worker under the new name, deploys to that, and leaves the custom domain
+  // pointing at the old one — so the site keeps serving the previous build
+  // while the deploy log says success.
+  "name": "acpublic",
+
+  // No "main" field: this is an assets-only Worker. There is no server-side
+  // code, just the Vite build output. The API lives separately in ../ac-infra
+  // behind API Gateway.
+  "compatibility_date": "2026-08-21",
+
+  "assets": {
+    // Vite's build output. Must stay in sync with the dashboard's build
+    // command (`npm run build`), which is a Workers Builds setting and is not
+    // configurable from this file.
+    "directory": "./dist",
+
+    // Serve index.html with HTTP 200 for any path that does not match a file,
+    // so React Router handles deep links like /my?code=... on a hard refresh.
+    // This replaces the dist/404.html trick in vite.config.ts, which was a
+    // GitHub Pages workaround and is inert here.
+    //
+    // Caveat worth knowing, because it already cost us a debugging session:
+    // this fallback catches *everything*, including a misspelled asset URL. A
+    // request for /wrong-prefix/assets/index-abc.js returns index.html with a
+    // 200 and content-type text/html rather than a 404, so a bad `base` in
+    // vite.config.ts shows up as a blank page with a completely clean network
+    // tab. The only symptom is a MIME-type error in the console.
+    "not_found_handling": "single-page-application"
+  }
+}

@@ -5,15 +5,22 @@ import { copyFileSync, existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 /**
- * PHASE 0: GitHub Pages serves this repo at https://<user>.github.io/ac-public/,
- * so every asset path must be prefixed. PHASE 1: once the custom domain is live,
- * change this to '/'.
+ * PHASE 1: served from a Cloudflare Worker at the root of
+ * https://public.district80ac.com/, so asset paths are root-relative. This was
+ * '/ac-public/' under GitHub Pages (https://<user>.github.io/ac-public/) — do
+ * not put that back without moving the site back to a subpath.
  *
- * Getting it wrong does not produce an error — it produces a blank white page
- * with 404s for the JS bundle in the console. Worth knowing before you spend an
- * afternoon on it.
+ * Getting it wrong produces a blank white page and a *clean* network tab, which
+ * is what makes it expensive to chase. The Worker's SPA fallback answers the
+ * bogus /ac-public/assets/index-*.js request with index.html and HTTP 200, so
+ * nothing goes red; the browser then refuses the module for its text/html MIME
+ * type and React never mounts. The error is console-only.
+ *
+ * BASE also feeds BrowserRouter's basename via import.meta.env.BASE_URL in
+ * main.tsx, so a wrong value blanks the page a second, independent way: no
+ * route matches '/' when the basename is '/ac-public/'.
  */
-const BASE = '/ac-public/'
+const BASE = '/'
 
 /**
  * GitHub Pages has no SPA rewrite rule, so a hard refresh on /register — or any
