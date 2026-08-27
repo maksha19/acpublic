@@ -1,9 +1,10 @@
 import type {
   CreateRegistrationResult,
   EventInfo,
-  Payment,
+  MemberUpdateResult,
   PresignedUpload,
-  Registration,
+  Payment,
+  RegistrationView,
 } from './types'
 
 const BASE = import.meta.env.VITE_API_BASE
@@ -74,22 +75,48 @@ const json = (body: unknown): RequestInit => ({
   body: JSON.stringify(body),
 })
 
+const jsonPut = (body: unknown): RequestInit => ({
+  method: 'PUT',
+  body: JSON.stringify(body),
+})
+
 // ---------------------------------------------------------------- public ----
 
 export const getEvent = () => request<EventInfo>('/v1/event')
 
-export const createRegistration = (data: {
+export interface PersonInput {
   name: string
   email: string
   phone: string
   club: string
   dietary: string
   tshirt: string
-}) => request<CreateRegistrationResult>('/v1/registrations', json(data))
+}
+
+/** One booking of `seats` places. `seats` is 1 or the event's table size —
+ *  never anything between, and the server checks it against the event rather
+ *  than trusting this call. */
+export const createRegistration = (data: PersonInput & { seats: number }) =>
+  request<CreateRegistrationResult>('/v1/registrations', json(data))
 
 export const getRegistration = (code: string, k: string) =>
-  request<{ registration: Registration; payments: Payment[] }>(
+  request<RegistrationView>(
     `/v1/registrations/${encodeURIComponent(code)}?k=${encodeURIComponent(k)}`,
+  )
+
+/**
+ * Name one member of a table. Saved one at a time on purpose: a forty-field
+ * form for ten people is abandoned halfway on a phone, and "details at any
+ * time" needs incremental saves regardless.
+ *
+ * `memberNo` is 1–9 — the owner is attendee 1, so member 01 is the second
+ * person at the table.
+ */
+export const updateMember = (code: string, memberNo: number, k: string, data: PersonInput) =>
+  request<MemberUpdateResult>(
+    `/v1/registrations/${encodeURIComponent(code)}/members/${String(memberNo).padStart(2, '0')}` +
+      `?k=${encodeURIComponent(k)}`,
+    jsonPut(data),
   )
 
 export const createProofUrl = (code: string, k: string, contentType: string) =>

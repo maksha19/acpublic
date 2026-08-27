@@ -2,36 +2,34 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { z } from 'zod'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Check, User, Users } from 'lucide-react'
 import { ApiError, createRegistration, getEvent } from '../lib/api'
+import { money, priceLine } from '../lib/format'
+import { EMPTY_PERSON, personSchema, TSHIRT_SIZES, type PersonValues } from '../lib/person'
 import { remember } from '../lib/session'
 import { Alert, Button, Card, Field, Input, LinkButton, PageHeader, Select } from '../components/ui'
+import type { EventInfo } from '../lib/types'
 
-/* Client-side validation mirrors the Pydantic models in the Lambda. It exists to
-   give fast, friendly feedback — the server revalidates everything, because
-   anyone can post to the API directly. */
-const schema = z.object({
-  name: z.string().trim().min(2, 'Please enter your full name.').max(80),
-  email: z
-    .string()
-    .trim()
-    .toLowerCase()
-    .regex(/^[^@\s]+@[^@\s.]+(\.[^@\s.]+)+$/, 'Enter a valid email address.'),
-  phone: z
-    .string()
-    .trim()
-    .regex(/^\+?[0-9][0-9\s\-()]{6,19}$/, 'Enter a valid phone number, e.g. +65 8123 4567.'),
-  club: z.string().trim().min(2, 'Please enter your club name.').max(80),
-  dietary: z.string().trim().max(120).default(''),
-  tshirt: z.enum(['', 'S', 'M', 'L', 'XL', 'XXL']).default(''),
-})
+/* Validation lives in lib/person.ts — the same six fields describe the person
+   registering and every guest they name, and the server revalidates all of it
+   either way. */
+const schema = personSchema('your')
 
-type FormValues = z.input<typeof schema>
+type FormValues = PersonValues
 
 export default function Register() {
   const { data: event } = useQuery({ queryKey: ['event'], queryFn: getEvent })
-  const [result, setResult] = useState<{ code: string; accessKey: string } | null>(null)
+
+  /* The fork: one place or a whole table. A choice made BEFORE the form, not a
+     quantity field inside it — a table of ten is a different thing to buy, with
+     a different price and a roster to fill in afterwards, and burying that in a
+     number input reads as an afterthought. */
+  const [seats, setSeats] = useState<number | null>(null)
+  const [result, setResult] = useState<{ code: string; accessKey: string; seats: number } | null>(
+    null,
+  )
+
+  const tableSeats = event?.tableSeats ?? 10
 
   const {
     register,
@@ -40,7 +38,7 @@ export default function Register() {
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { name: '', email: '', phone: '', club: '', dietary: '', tshirt: '' },
+    defaultValues: EMPTY_PERSON,
   })
 
   const mutation = useMutation({
@@ -49,7 +47,7 @@ export default function Register() {
       // The access key is shown once and emailed once. Keeping it in this
       // browser means "Check my registration" works later without the email.
       remember(data.code, data.accessKey)
-      setResult({ code: data.code, accessKey: data.accessKey })
+      setResult({ code: data.code, accessKey: data.accessKey, seats: data.seats })
     },
     onError: (err) => {
       // Map server field errors back onto the inputs, so a rejected email lands
@@ -62,61 +60,76 @@ export default function Register() {
     },
   })
 
-  if (result) {
-    const payHref = `/register/${result.code}/payment?k=${encodeURIComponent(result.accessKey)}`
+  if (result) return <Registered {...result} tableSeats={tableSeats} />
+
+  if (seats === null) {
     return (
       <div className="space-y-6">
-        <PageHeader title="You're registered — one step to go" />
-        <Card>
-          <p className="text-lg">Your place is reserved but not yet confirmed. Payment comes next.</p>
-
-          <div className="my-6 rounded-md bg-happy-yellow px-5 py-4 text-center">
-            <p className="text-[15px] uppercase tracking-[0.1em] text-loyal-blue">
-              Your registration code
-            </p>
-            <p className="font-heading text-3xl font-bold tracking-wide text-loyal-blue tnum">
-              {result.code}
-            </p>
-          </div>
-
-          <Alert tone="info" title="We've emailed this to you">
-            The email has your code, the payment details and a personal link to check your status.
-            Keep it — the link cannot be recovered from the code alone.
-          </Alert>
-
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <LinkButton to={payHref}>
-              Continue to payment <ArrowRight className="size-4" aria-hidden="true" />
-            </LinkButton>
-            <LinkButton to={`/my?code=${result.code}&k=${encodeURIComponent(result.accessKey)}`} variant="secondary">
-              View my registration
-            </LinkButton>
-          </div>
-        </Card>
+        <PageHeader
+          title="Register for AC 2027"
+          lede="Register yourself, or book a whole table for your club."
+        />
+        <PriceWindowNote event={event} />
+        <BookingChoice event={event} onChoose={setSeats} />
       </div>
     )
   }
 
+  const isTable = seats > 1
+
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Register for AC 2027"
+        title={isTable ? `Book a table of ${seats}` : 'Register for AC 2027'}
         lede={
-          event
-            ? `Conference fee: ${event.currency} ${Number(event.fee).toFixed(2)}. You'll pay after this step.`
+          isTable
+            ? `Your own details first. The other ${seats - 1} places are reserved straight away and you can name them whenever you like.`
             : 'Fill in your details. Payment comes after this step.'
         }
       />
 
+      <Card className="!py-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-[17px]">
+            <span className="font-semibold">
+              {isTable ? `A table of ${seats}` : 'One place, just me'}
+            </span>
+            {event && (
+              <span className="text-muted-fg">
+                {' · '}
+                {priceLine(
+                  seats,
+                  event.fee,
+                  isTable ? event.tableFee : event.fee,
+                  event.currency,
+                )}
+              </span>
+            )}
+          </p>
+          <Button variant="ghost" onClick={() => setSeats(null)} className="!px-3">
+            Change
+          </Button>
+        </div>
+      </Card>
+
       <Card>
         <form
-          onSubmit={handleSubmit((values) => mutation.mutate(values as Required<FormValues>))}
+          onSubmit={handleSubmit((values) =>
+            mutation.mutate({ ...(values as Required<FormValues>), seats }),
+          )}
           className="space-y-5"
           noValidate
         >
           {mutation.error && !(mutation.error instanceof ApiError && mutation.error.fields) && (
             <Alert tone="error" title="We couldn't complete your registration">
               {mutation.error.message}
+            </Alert>
+          )}
+
+          {isTable && (
+            <Alert tone="info" title="These are your own details">
+              You are attendee 1 of {seats}. We will ask for the other {seats - 1} names later —
+              there is nothing to fill in for them now.
             </Alert>
           )}
 
@@ -134,7 +147,11 @@ export default function Register() {
             label="Email"
             htmlFor="email"
             required
-            hint="Your registration code and confirmation are sent here."
+            hint={
+              isTable
+                ? 'Your booking code, payment details and confirmation are sent here — and only here.'
+                : 'Your registration code and confirmation are sent here.'
+            }
             error={errors.email?.message}
           >
             <Input
@@ -166,12 +183,18 @@ export default function Register() {
             />
           </Field>
 
-          <Field label="Club" htmlFor="club" required error={errors.club?.message}>
+          <Field
+            label="Club"
+            htmlFor="club"
+            required
+            hint={isTable ? 'Your own club. Each guest can be from a different one.' : undefined}
+            error={errors.club?.message}
+          >
             <Input
               id="club"
               autoComplete="organization"
               aria-invalid={!!errors.club}
-              aria-describedby={errors.club ? 'club-error' : undefined}
+              aria-describedby={errors.club ? 'club-error' : isTable ? 'club-hint' : undefined}
               {...register('club')}
             />
           </Field>
@@ -189,7 +212,7 @@ export default function Register() {
             <Field label="T-shirt size" htmlFor="tshirt" hint="Optional." error={errors.tshirt?.message}>
               <Select id="tshirt" aria-describedby="tshirt-hint" {...register('tshirt')}>
                 <option value="">Not sure yet</option>
-                {['S', 'M', 'L', 'XL', 'XXL'].map((s) => (
+                {TSHIRT_SIZES.map((s) => (
                   <option key={s} value={s}>
                     {s}
                   </option>
@@ -200,13 +223,218 @@ export default function Register() {
 
           <div className="border-t border-border pt-5">
             <Button type="submit" disabled={isSubmitting || mutation.isPending} className="w-full sm:w-auto">
-              {mutation.isPending ? 'Registering…' : 'Register'}
+              {mutation.isPending
+                ? 'Registering…'
+                : isTable
+                  ? `Reserve ${seats} places`
+                  : 'Register'}
             </Button>
             <p className="mt-3 text-[15px] text-muted-fg">
-              Registering reserves a place. It is confirmed once your payment has been verified.
+              {isTable
+                ? `Reserving holds all ${seats} places. They are confirmed once your payment has been verified. Unused places are not refunded.`
+                : 'Registering reserves a place. It is confirmed once your payment has been verified.'}
             </p>
           </div>
         </form>
+      </Card>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ fork ---- */
+
+function BookingChoice({
+  event,
+  onChoose,
+}: {
+  event?: EventInfo
+  onChoose: (seats: number) => void
+}) {
+  const tableSeats = event?.tableSeats ?? 10
+  // Availability comes from the API as two separate answers, because they are
+  // two separate counters. Whole tables can sell out while individual places
+  // remain, and the opposite is also possible.
+  const soloOpen = event?.individualBookingsAvailable !== false
+  const tableOpen = event?.tableBookingsAvailable !== false
+
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      <Option
+        Icon={User}
+        title="Just me"
+        price={money(event?.fee, event?.currency)}
+        priceNote="one place"
+        available={soloOpen}
+        unavailableNote="Every place has been taken."
+        bullets={['Your own seat', 'You pay for yourself', 'Confirmed once we verify your payment']}
+        cta="Register myself"
+        onChoose={() => onChoose(1)}
+      />
+      <Option
+        Icon={Users}
+        title={`A table of ${tableSeats}`}
+        price={money(event?.tableFee, event?.currency)}
+        priceNote={`${tableSeats} places · one payment`}
+        available={tableOpen}
+        unavailableNote={
+          soloOpen
+            ? 'Whole tables are sold out — individual places are still available.'
+            : 'Every place has been taken.'
+        }
+        bullets={[
+          `You sit together, all ${tableSeats} of you`,
+          'One payment and one screenshot for the whole table',
+          'Add the other names whenever you have them',
+        ]}
+        cta={`Book a table of ${tableSeats}`}
+        onChoose={() => onChoose(tableSeats)}
+        highlight
+      />
+    </div>
+  )
+}
+
+function Option({
+  Icon,
+  title,
+  price,
+  priceNote,
+  bullets,
+  cta,
+  onChoose,
+  available,
+  unavailableNote,
+  highlight = false,
+}: {
+  Icon: typeof User
+  title: string
+  price: string
+  priceNote: string
+  bullets: string[]
+  cta: string
+  onChoose: () => void
+  available: boolean
+  unavailableNote: string
+  highlight?: boolean
+}) {
+  return (
+    <div
+      className={`flex flex-col rounded-lg border bg-white p-6 ${
+        highlight ? 'border-primary border-2' : 'border-border'
+      } ${available ? '' : 'opacity-70'}`}
+    >
+      <div className="flex items-center gap-3">
+        <Icon className="size-6 shrink-0 text-primary" aria-hidden="true" />
+        <h2 className="text-xl">{title}</h2>
+      </div>
+      <p className="mt-3 font-heading text-2xl font-bold text-loyal-blue tnum">{price}</p>
+      <p className="text-[15px] text-muted-fg">{priceNote}</p>
+
+      <ul className="mt-4 flex-1 space-y-2">
+        {bullets.map((b) => (
+          <li key={b} className="flex gap-2 text-[16px]">
+            <Check className="mt-1 size-4 shrink-0 text-success" aria-hidden="true" />
+            <span>{b}</span>
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-5">
+        {available ? (
+          <Button onClick={onChoose} variant={highlight ? 'primary' : 'secondary'} className="w-full">
+            {cta} <ArrowRight className="size-4" aria-hidden="true" />
+          </Button>
+        ) : (
+          <Alert tone="warning" title="Not available">
+            {unavailableNote}
+          </Alert>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function PriceWindowNote({ event }: { event?: EventInfo }) {
+  if (!event?.nextPriceWindow) return null
+  const from = event.nextPriceWindow.fromUtc
+  // Rendered from the two numbers the API resolved. Working out WHICH window
+  // applies is deliberately not done here.
+  return (
+    <Alert tone="info" title={`Current price: ${money(event.fee, event.currency)} per place`}>
+      This rises to {money(event.nextPriceWindow.fee, event.currency)}
+      {from ? ` on ${new Date(from).toLocaleDateString()}` : ' later'}.
+    </Alert>
+  )
+}
+
+/* --------------------------------------------------------------- success ---- */
+
+function Registered({
+  code,
+  accessKey,
+  seats,
+  tableSeats,
+}: {
+  code: string
+  accessKey: string
+  seats: number
+  tableSeats: number
+}) {
+  const isTable = seats > 1
+  const payHref = `/register/${code}/payment?k=${encodeURIComponent(accessKey)}`
+  const myHref = `/my?code=${code}&k=${encodeURIComponent(accessKey)}`
+
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        title={
+          isTable ? `Your table of ${seats} is reserved — one step to go` : "You're registered — one step to go"
+        }
+      />
+      <Card>
+        <p className="text-lg">
+          {isTable
+            ? `All ${seats} places are reserved but not yet confirmed. Payment comes next.`
+            : 'Your place is reserved but not yet confirmed. Payment comes next.'}
+        </p>
+
+        <div className="my-6 rounded-md bg-happy-yellow px-5 py-4 text-center">
+          <p className="text-[15px] uppercase tracking-[0.1em] text-loyal-blue">
+            {isTable ? 'Your booking code' : 'Your registration code'}
+          </p>
+          <p className="font-heading text-3xl font-bold tracking-wide text-loyal-blue tnum">
+            {code}
+          </p>
+          {isTable && (
+            <p className="mt-1 text-[15px] text-loyal-blue">
+              Your guests will get their own codes, {code}-01 to {code}-
+              {String(tableSeats - 1).padStart(2, '0')}
+            </p>
+          )}
+        </div>
+
+        <Alert tone="info" title="We've emailed this to you">
+          The email has your code, the payment details and a personal link to check your status.
+          Keep it — the link cannot be recovered from the code alone.
+        </Alert>
+
+        {isTable && (
+          <div className="mt-4">
+            <Alert tone="warning" title={`${seats - 1} places still need names`}>
+              There is no hurry — add them one at a time from your booking page. Each guest is
+              emailed their own code as you go.
+            </Alert>
+          </div>
+        )}
+
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+          <LinkButton to={payHref}>
+            Continue to payment <ArrowRight className="size-4" aria-hidden="true" />
+          </LinkButton>
+          <LinkButton to={myHref} variant="secondary">
+            {isTable ? 'View my booking' : 'View my registration'}
+          </LinkButton>
+        </div>
       </Card>
     </div>
   )

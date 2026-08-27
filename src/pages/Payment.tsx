@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 import { CheckCircle2, Upload } from 'lucide-react'
 import { ApiError, createProofUrl, getEvent, getRegistration, submitPayment, uploadToS3 } from '../lib/api'
+import { money, priceLine } from '../lib/format'
 import { recall } from '../lib/session'
 import {
   Alert,
@@ -85,11 +86,19 @@ export default function Payment() {
     defaultValues: { reference: '', paidOn: '', amount: '', method: 'BANK_TRANSFER' },
   })
 
-  // Prefill the amount with the conference fee once it has loaded — the member
-  // paid that figure, so retyping it is friction with no purpose.
+  /* What this booking owes: the amount frozen when it was made, NOT the event's
+     current fee. A table booked during early bird still owes the early-bird
+     total after the window closes, and the confirmation email already said so. */
+  const expectedAmount =
+    regQuery.data?.registration.expectedAmount ?? (event ? Number(event.fee) : undefined)
+
+  // Prefill the amount once it is known — the member paid that figure, so
+  // retyping it is friction with no purpose.
   useEffect(() => {
-    if (event) reset((v) => ({ ...v, amount: Number(event.fee).toFixed(2) }), { keepDirtyValues: true })
-  }, [event, reset])
+    if (expectedAmount !== undefined) {
+      reset((v) => ({ ...v, amount: Number(expectedAmount).toFixed(2) }), { keepDirtyValues: true })
+    }
+  }, [expectedAmount, reset])
 
   const previewUrl = useMemo(
     () => (file && file.type.startsWith('image/') ? URL.createObjectURL(file) : null),
@@ -236,13 +245,26 @@ export default function Payment() {
 
   const busy = stage !== 'idle'
   const pay = event?.payment
+  const seats = reg.seats ?? 1
+  const isTable = seats > 1
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Upload your payment"
-        lede={`Registration ${reg.code} — ${reg.name}`}
+        title={isTable ? 'Upload the payment for your table' : 'Upload your payment'}
+        lede={
+          isTable
+            ? `Booking ${reg.code} — ${seats} places, booked by ${reg.name ?? ''}`
+            : `Registration ${reg.code} — ${reg.name ?? ''}`
+        }
       />
+
+      {isTable && (
+        <Alert tone="info" title="One payment covers the whole table">
+          {seats} places, one transfer, one screenshot. You do not need the other names before
+          paying.
+        </Alert>
+      )}
 
       {lastRejection && (
         <Alert tone="error" title="Your previous submission needs correcting">
@@ -261,16 +283,19 @@ export default function Payment() {
               <DataRow label="Account number" value={<span className="tnum">{pay.accountNumber}</span>} />
             )}
             {pay.payNow && <DataRow label="PayNow" value={<span className="tnum">{pay.payNow}</span>} />}
-            {event && (
-              <DataRow
-                label="Amount"
-                value={
-                  <span className="tnum">
-                    {event.currency} {Number(event.fee).toFixed(2)}
-                  </span>
-                }
-              />
-            )}
+            <DataRow
+              label="Amount to transfer"
+              value={
+                <span className="tnum">
+                  {money(expectedAmount, event?.currency)}
+                  {isTable && (
+                    <span className="ml-2 block font-normal text-muted-fg sm:inline">
+                      {priceLine(seats, reg.unitFee, expectedAmount, event?.currency)}
+                    </span>
+                  )}
+                </span>
+              }
+            />
             <DataRow label="Payment reference" value={<span className="tnum">{reg.code}</span>} />
           </dl>
           {pay.instructions && <p className="mt-3 text-[16px] text-muted-fg">{pay.instructions}</p>}

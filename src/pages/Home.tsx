@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
-import { CalendarDays, CreditCard, MailCheck, MapPin, UserPlus } from 'lucide-react'
+import { CalendarDays, CreditCard, MailCheck, MapPin, UserPlus, Users } from 'lucide-react'
 import { getEvent } from '../lib/api'
+import { money } from '../lib/format'
 import { Alert, Card, LinkButton, PageHeader, Spinner } from '../components/ui'
 
 const STEPS = [
-  { Icon: UserPlus, title: 'Register', body: 'Fill in the form. You get a registration code straight away.' },
-  { Icon: CreditCard, title: 'Pay and upload', body: 'Transfer the fee, then upload your payment screenshot on the site.' },
+  { Icon: UserPlus, title: 'Register', body: 'Register yourself, or book a table of ten for your club. You get a code straight away.' },
+  { Icon: CreditCard, title: 'Pay and upload', body: 'Transfer the fee, then upload your payment screenshot on the site. One payment covers a whole table.' },
   { Icon: MailCheck, title: 'Get confirmed', body: 'The team verifies your payment and emails your confirmation.' },
 ]
 
@@ -32,7 +33,9 @@ export default function Home() {
         <>
           <Card>
             <h2 className="text-2xl">{event.name}</h2>
-            <dl className="mt-4 grid gap-4 sm:grid-cols-3">
+            {/* Four items, so a 3-column grid would leave one orphaned on its
+                own row. 2 then 4. */}
+            <dl className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <div className="flex gap-3">
                 <CalendarDays className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
                 <div>
@@ -50,12 +53,34 @@ export default function Home() {
               <div className="flex gap-3">
                 <CreditCard className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
                 <div>
-                  <dt className="text-[15px] text-muted-fg">Fee</dt>
+                  <dt className="text-[15px] text-muted-fg">Fee per place</dt>
                   <dd className="font-semibold tnum">
-                    {event.currency} {Number(event.fee).toFixed(2)}
+                    {money(event.fee, event.currency)}
+                    {event.priceWindow === 'EARLY_BIRD' && (
+                      <span className="ml-2 font-normal text-success">early bird</span>
+                    )}
                   </dd>
                 </div>
               </div>
+              {event.tableFee !== undefined && (
+                <div className="flex gap-3">
+                  <Users className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
+                  <div>
+                    <dt className="text-[15px] text-muted-fg">
+                      Table of {event.tableSeats ?? 10}
+                    </dt>
+                    <dd className="font-semibold tnum">
+                      {money(event.tableFee, event.currency)}
+                      {/* Two counters, two answers. A club president who reads
+                          "full" and stops looking while forty seats remain is
+                          the failure this line prevents. */}
+                      {event.tableBookingsAvailable === false && (
+                        <span className="ml-2 font-normal text-destructive">sold out</span>
+                      )}
+                    </dd>
+                  </div>
+                </div>
+              )}
             </dl>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">

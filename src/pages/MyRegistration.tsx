@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Search } from 'lucide-react'
-import { getRegistration } from '../lib/api'
+import { Search, Users } from 'lucide-react'
+import { getEvent, getRegistration } from '../lib/api'
+import { money, priceLine } from '../lib/format'
 import { recall, remember } from '../lib/session'
+import Roster from '../components/Roster'
 import {
   Alert,
   Button,
@@ -32,6 +34,19 @@ const NEXT_STEP: Partial<Record<RegStatus, string>> = {
   CHECKED_IN: 'You are checked in. Enjoy the conference.',
 }
 
+/* A guest on someone else's table has a different next step for every status,
+   because none of them involve them paying anything. */
+const GUEST_NEXT_STEP: Partial<Record<RegStatus, string>> = {
+  PENDING_PAYMENT:
+    'Your place is reserved. There is nothing for you to pay — the person who booked the table is settling it.',
+  PAYMENT_SUBMITTED:
+    'The payment for your table is with the registration team. Nothing is needed from you.',
+  CONFIRMED: 'Your place is confirmed. Bring your code on the day.',
+  REJECTED:
+    'There is a query on the payment for your table. The person who booked it has been contacted — nothing is needed from you.',
+  CHECKED_IN: 'You are checked in. Enjoy the conference.',
+}
+
 export default function MyRegistration() {
   const [params, setParams] = useSearchParams()
   const urlCode = params.get('code') ?? ''
@@ -46,6 +61,7 @@ export default function MyRegistration() {
   const [formCode, setFormCode] = useState(code)
   const [formKey, setFormKey] = useState(accessKey)
 
+  const { data: event } = useQuery({ queryKey: ['event'], queryFn: getEvent })
   const query = useQuery({
     queryKey: ['registration', code, accessKey],
     queryFn: () => getRegistration(code, accessKey),
@@ -70,7 +86,12 @@ export default function MyRegistration() {
         />
         <Card>
           <form onSubmit={lookup} className="space-y-5" noValidate>
-            <Field label="Registration code" htmlFor="code" required hint="For example AC27-0042.">
+            <Field
+              label="Registration code"
+              htmlFor="code"
+              required
+              hint="For example AC27-0042, or AC27-0042-03 if you are a guest on someone's table."
+            >
               <Input
                 id="code"
                 className="tnum"
@@ -123,17 +144,26 @@ export default function MyRegistration() {
     )
   }
 
-  const { registration: reg, payments } = query.data!
-  const needsPayment = reg.status === 'PENDING_PAYMENT' || reg.status === 'REJECTED'
+  const { registration: reg, members, payments, booking } = query.data!
+  const seats = reg.seats ?? 1
+  const isTable = seats > 1
+  // A guest is an attendee whose booking is not their own — they have a member
+  // number, and the money belongs to someone else entirely.
+  const isGuest = reg.memberNo !== undefined
+  const needsPayment =
+    !isGuest && (reg.status === 'PENDING_PAYMENT' || reg.status === 'REJECTED')
+  const nextStep = (isGuest ? GUEST_NEXT_STEP : NEXT_STEP)[reg.status]
 
   return (
     <div className="space-y-6">
-      <PageHeader title="My registration" />
+      <PageHeader title={isTable ? 'My table booking' : 'My registration'} />
 
       <Card>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-[15px] uppercase tracking-[0.1em] text-muted-fg">Registration code</p>
+            <p className="text-[15px] uppercase tracking-[0.1em] text-muted-fg">
+              {isTable ? 'Booking code' : isGuest ? 'Your code' : 'Registration code'}
+            </p>
             <p className="font-heading text-2xl font-bold tracking-wide text-loyal-blue tnum">
               {reg.code}
             </p>
@@ -141,10 +171,24 @@ export default function MyRegistration() {
           <StatusBadge status={reg.status} />
         </div>
 
-        {NEXT_STEP[reg.status] && (
+        {isTable && (
+          <p className="mt-2 flex items-center gap-2 text-[16px] text-muted-fg">
+            <Users className="size-4 shrink-0" aria-hidden="true" />
+            {seats} places · {priceLine(seats, reg.unitFee, reg.expectedAmount, event?.currency)}
+          </p>
+        )}
+
+        {isGuest && booking && (
+          <p className="mt-2 flex items-center gap-2 text-[16px] text-muted-fg">
+            <Users className="size-4 shrink-0" aria-hidden="true" />
+            Part of a table of {booking.seats} booked by {booking.ownerName ?? 'another member'}
+          </p>
+        )}
+
+        {nextStep && (
           <div className="mt-4">
             <Alert tone={needsPayment ? 'warning' : reg.status === 'CONFIRMED' ? 'success' : 'info'}>
-              {NEXT_STEP[reg.status]}
+              {nextStep}
             </Alert>
           </div>
         )}
@@ -158,59 +202,89 @@ export default function MyRegistration() {
         )}
       </Card>
 
+      {/* The roster. Only the owner of a table sees it — a guest gets their own
+          row and nothing about the other nine. */}
+      {isTable && members.length > 0 && (
+        <Roster
+          code={reg.code}
+          accessKey={accessKey}
+          seats={seats}
+          namedSeats={reg.namedSeats ?? 1}
+          members={members}
+          closed={isRosterClosed(event?.rosterCutoff)}
+          cutoffLabel={event?.rosterCutoffLabel}
+          onSaved={() => query.refetch()}
+        />
+      )}
+
       <Card>
-        <h2 className="text-xl">Your details</h2>
+        <h2 className="text-xl">{isTable ? 'Your own details' : 'Your details'}</h2>
         <dl className="mt-3">
-          <DataRow label="Name" value={reg.name} />
-          <DataRow label="Email" value={reg.email} />
-          <DataRow label="Mobile" value={<span className="tnum">{reg.phone}</span>} />
-          <DataRow label="Club" value={reg.club} />
+          <DataRow label="Name" value={reg.name ?? '—'} />
+          <DataRow label="Email" value={reg.email ?? '—'} />
+          <DataRow label="Mobile" value={<span className="tnum">{reg.phone ?? '—'}</span>} />
+          <DataRow label="Club" value={reg.club ?? '—'} />
           <DataRow label="Dietary requirements" value={reg.dietary || '—'} />
           <DataRow label="T-shirt size" value={reg.tshirt || '—'} />
         </dl>
         <p className="mt-4 text-[15px] text-muted-fg">
-          Need a change? Contact the registration team — self-service edits arrive in a later
-          release.
+          {isGuest
+            ? 'Need a change? Ask whoever booked the table, or contact the registration team.'
+            : 'Need a change? Contact the registration team — self-service edits arrive in a later release.'}
         </p>
       </Card>
 
-      <Card>
-        <h2 className="text-xl">Payment history</h2>
-        {payments.length === 0 ? (
-          <p className="mt-3 text-muted-fg">No payment submitted yet.</p>
-        ) : (
-          <ul className="mt-3 space-y-4">
-            {payments.map((p) => (
-              <li key={p.paymentId} className="rounded-md border border-border p-4">
-                <div className="flex flex-wrap items-baseline justify-between gap-2">
-                  <p className="font-semibold tnum">{p.reference}</p>
-                  <span
-                    className={`rounded-full px-3 py-0.5 font-heading text-sm font-semibold ${
-                      p.status === 'APPROVED'
-                        ? 'bg-success text-white'
+      {/* A guest never sees the payment history: it is not their money. */}
+      {!isGuest && (
+        <Card>
+          <h2 className="text-xl">Payment history</h2>
+          {payments.length === 0 ? (
+            <p className="mt-3 text-muted-fg">No payment submitted yet.</p>
+          ) : (
+            <ul className="mt-3 space-y-4">
+              {payments.map((p) => (
+                <li key={p.paymentId} className="rounded-md border border-border p-4">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <p className="font-semibold tnum">{p.reference}</p>
+                    <span
+                      className={`rounded-full px-3 py-0.5 font-heading text-sm font-semibold ${
+                        p.status === 'APPROVED'
+                          ? 'bg-success text-white'
+                          : p.status === 'REJECTED'
+                            ? 'bg-destructive text-white'
+                            : 'border-2 border-primary bg-white text-primary'
+                      }`}
+                    >
+                      {p.status === 'APPROVED'
+                        ? 'Verified'
                         : p.status === 'REJECTED'
-                          ? 'bg-destructive text-white'
-                          : 'border-2 border-primary bg-white text-primary'
-                    }`}
-                  >
-                    {p.status === 'APPROVED'
-                      ? 'Verified'
-                      : p.status === 'REJECTED'
-                        ? 'Not verified'
-                        : 'Under review'}
-                  </span>
-                </div>
-                <p className="mt-1 text-[16px] text-muted-fg tnum">
-                  {Number(p.amount).toFixed(2)} · paid {p.paidOn} · {p.method.replace('_', ' ').toLowerCase()}
-                </p>
-                {p.rejectReason && (
-                  <p className="mt-2 text-[16px] font-semibold text-destructive">{p.rejectReason}</p>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </Card>
+                          ? 'Not verified'
+                          : 'Under review'}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-[16px] text-muted-fg tnum">
+                    {money(p.amount, event?.currency)} · paid {p.paidOn} ·{' '}
+                    {p.method.replace('_', ' ').toLowerCase()}
+                    {(p.seats ?? 1) > 1 && ` · ${p.seats} places`}
+                  </p>
+                  {p.rejectReason && (
+                    <p className="mt-2 text-[16px] font-semibold text-destructive">{p.rejectReason}</p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+      )}
     </div>
   )
+}
+
+/** Read-time only, because nothing writes when the date passes — there is no
+ *  scheduler. The API enforces the same comparison; this just stops the owner
+ *  filling in a form that is going to be refused. */
+function isRosterClosed(cutoff?: string): boolean {
+  if (!cutoff) return false
+  const at = Date.parse(cutoff)
+  return Number.isFinite(at) && Date.now() > at
 }
