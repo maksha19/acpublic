@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Outlet, Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
 import Home from './pages/Home'
 import Register from './pages/Register'
@@ -21,16 +21,29 @@ function NotFound() {
   )
 }
 
+/** The exact container the old <main> used to impose. The transactional pages
+ *  keep it (pixel-identical to before); Home opts out so its landing bands can
+ *  run the full viewport width. */
+function Contained() {
+  return (
+    <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:py-10">
+      <Outlet />
+    </div>
+  )
+}
+
 export default function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<Home />} />
-        <Route path="register" element={<Register />} />
-        {/* Deep-linked from the registration email, with the access key. */}
-        <Route path="register/:code/payment" element={<Payment />} />
-        <Route path="my" element={<MyRegistration />} />
-        <Route path="*" element={<NotFound />} />
+        <Route element={<Contained />}>
+          <Route path="register" element={<Register />} />
+          {/* Deep-linked from the registration email, with the access key. */}
+          <Route path="register/:code/payment" element={<Payment />} />
+          <Route path="my" element={<MyRegistration />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
       </Route>
     </Routes>
   )

@@ -7,7 +7,7 @@ import { ApiError, createRegistration, getEvent } from '../lib/api'
 import { money, priceLine } from '../lib/format'
 import { EMPTY_PERSON, personSchema, TSHIRT_SIZES, type PersonValues } from '../lib/person'
 import { remember } from '../lib/session'
-import { Alert, Button, Card, Field, Input, LinkButton, PageHeader, Select } from '../components/ui'
+import { Alert, Button, Card, Field, Input, LinkButton, PageHeader, PriceWindowNote, Select } from '../components/ui'
 import type { EventInfo } from '../lib/types'
 
 /* Validation lives in lib/person.ts — the same six fields describe the person
@@ -354,18 +354,8 @@ function Option({
   )
 }
 
-function PriceWindowNote({ event }: { event?: EventInfo }) {
-  if (!event?.nextPriceWindow) return null
-  const from = event.nextPriceWindow.fromUtc
-  // Rendered from the two numbers the API resolved. Working out WHICH window
-  // applies is deliberately not done here.
-  return (
-    <Alert tone="info" title={`Current price: ${money(event.fee, event.currency)} per place`}>
-      This rises to {money(event.nextPriceWindow.fee, event.currency)}
-      {from ? ` on ${new Date(from).toLocaleDateString()}` : ' later'}.
-    </Alert>
-  )
-}
+/* PriceWindowNote moved to components/ui.tsx — the landing page shows the same
+   note, and two copies of a price sentence is how they end up disagreeing. */
 
 /* --------------------------------------------------------------- success ---- */
 

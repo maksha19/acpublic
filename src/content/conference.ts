@@ -1,0 +1,326 @@
+/* ============================================================================
+ * MOCK CONTENT — DO NOT PUBLISH AS-IS
+ *
+ * This file is the landing page's copy deck, and the ONLY file to edit when
+ * the committee supplies the real content. Every field group below is flagged:
+ *
+ *   [REAL] — verified fact (District 80 public site, or mirrors the seeded
+ *            event in ac-infra/scripts/seed.py)
+ *   [MOCK] — invented to demonstrate the layout; replace before launch
+ *
+ * Flags live in comments only. Nothing here may render a "[MOCK]" string —
+ * the page must look real to demo well, which is exactly why this banner
+ * exists.
+ *
+ * Two values are duplicated OUTSIDE this file and must be changed together:
+ *   - venue.name        ↔ ac-infra/scripts/seed.py EVENT["venue"] (the API is
+ *                         authoritative; this copy is the offline fallback)
+ *   - district.name     ↔ ac-public/index.html <title> and meta description
+ * ========================================================================== */
+
+import type { LucideIcon } from 'lucide-react'
+import { Award, Mic, Trophy, Users } from 'lucide-react'
+
+export interface Stat {
+  value: string
+  label: string
+}
+
+export interface SocialLink {
+  label: string
+  href: string
+}
+
+export interface WhyAttendItem {
+  Icon: LucideIcon
+  title: string
+  body: string
+}
+
+export interface Speaker {
+  name: string
+  credentials: string
+  session: string
+  blurb: string
+}
+
+export interface AgendaItem {
+  time: string
+  title: string
+  detail?: string
+}
+
+export interface AgendaDay {
+  label: string
+  items: AgendaItem[]
+}
+
+export interface VenueDetails {
+  /** Must match seed.py EVENT["venue"] — see the header note. */
+  name: string
+  address: string
+  mapsUrl: string
+  mrt: string
+  parking: string
+  notes: string[]
+}
+
+export interface CommitteeMember {
+  name: string
+  role: string
+}
+
+export interface Testimonial {
+  quote: string
+  name: string
+  club: string
+}
+
+export interface FaqItem {
+  q: string
+  a: string
+}
+
+export interface ConferenceContent {
+  district: {
+    name: string
+    stats: Stat[]
+    socials: SocialLink[]
+    contactEmail: string
+  }
+  /** Mirrors seed.py EVENT so the hero renders before (or without) the API.
+   *  If the seed's dates change, change these too. */
+  fallbackEvent: { dateLabel: string; startsOn: string; city: string }
+  hero: { theme: string; tagline: string }
+  whyAttend: WhyAttendItem[]
+  speakers: Speaker[]
+  agendaDays: AgendaDay[]
+  ticketPerks: { individual: string[]; table: string[] }
+  venue: VenueDetails
+  committee: CommitteeMember[]
+  testimonials: Testimonial[]
+  faq: FaqItem[]
+  finalCta: { heading: string; body: string }
+}
+
+export const CONFERENCE: ConferenceContent = {
+  /* [REAL] — district facts and social profiles from d80toastmasters.org.
+     The contact email is [MOCK]: the domain is real, the mailbox is invented. */
+  district: {
+    name: 'District 80',
+    stats: [
+      { value: '200+', label: 'clubs' },
+      { value: '4,500+', label: 'members' },
+      { value: '9', label: 'divisions' },
+      { value: '45', label: 'areas' },
+    ],
+    socials: [
+      { label: 'Facebook', href: 'https://www.facebook.com/District80' },
+      { label: 'Instagram', href: 'https://www.instagram.com/district80_toastmasters' },
+      { label: 'LinkedIn', href: 'https://www.linkedin.com/company/toastmasters-district-80/' },
+      { label: 'YouTube', href: 'https://www.youtube.com/@singaporetoastmastersdistr9843' },
+    ],
+    contactEmail: 'ac2027@d80toastmasters.org',
+  },
+
+  /* [REAL] — mirrors ac-infra/scripts/seed.py EVENT. */
+  fallbackEvent: { dateLabel: '15–16 May 2027', startsOn: '2027-05-15', city: 'Singapore' },
+
+  /* [MOCK] — the theme is the committee's biggest branding decision; this one
+     is a placeholder to size the hero. */
+  hero: {
+    theme: 'Rise Together',
+    tagline:
+      'Two days of keynotes, contest finals and connection with Toastmasters from every corner of Singapore.',
+  },
+
+  /* [MOCK] copy; the member and club numbers echoed in "Connect" are [REAL]. */
+  whyAttend: [
+    {
+      Icon: Mic,
+      title: 'Learn',
+      body: 'Keynotes and hands-on workshops from speakers and leaders at the top of their craft.',
+    },
+    {
+      Icon: Trophy,
+      title: 'Watch the finals',
+      body: 'The International Speech and Table Topics contest finals — the best of the district on one stage.',
+    },
+    {
+      Icon: Users,
+      title: 'Connect',
+      body: 'One weekend with members from 200+ clubs. Your next mentor, evaluator or co-organiser is in the room.',
+    },
+    {
+      Icon: Award,
+      title: 'Celebrate',
+      body: 'The gala dinner, the Hall of Fame and a year of club achievements, honoured properly.',
+    },
+  ],
+
+  /* [MOCK] — invented speakers, kept distinct from the seeded demo attendees
+     so a demo never shows the same fake person on stage and in the queue. */
+  speakers: [
+    {
+      name: 'Dr. Adeline Pang, DTM',
+      credentials: 'Past District Director, District 80',
+      session: 'Leading Beyond the Lectern',
+      blurb: 'What twenty years of club leadership teach about influence when nobody has to listen to you.',
+    },
+    {
+      name: 'Rizal Hamid',
+      credentials: 'Accredited Speaker',
+      session: 'The Story Only You Can Tell',
+      blurb: 'Why the speech that scares you most is the one your audience came for.',
+    },
+    {
+      name: 'Sanjay Krishnamoorthy, DTM',
+      credentials: 'Region Advisor, Region 14',
+      session: 'From Member to Movement',
+      blurb: 'How ordinary clubs become the ones everyone wants to join.',
+    },
+  ],
+
+  /* Day labels are [REAL] (15 May 2027 is a Saturday). Times and programme
+     order are [MOCK] — the printed programme is the committee's call. */
+  agendaDays: [
+    {
+      label: 'Day 1 — Saturday 15 May',
+      items: [
+        { time: '08:30', title: 'Registration and coffee' },
+        { time: '09:30', title: 'Opening ceremony' },
+        { time: '10:15', title: 'Keynote', detail: 'Leading Beyond the Lectern' },
+        { time: '11:30', title: 'Concurrent workshops' },
+        { time: '13:00', title: 'Lunch' },
+        { time: '14:30', title: 'International Speech Contest final' },
+        { time: '17:00', title: 'Break — check in, dress up' },
+        { time: '19:00', title: 'Gala dinner and awards night' },
+      ],
+    },
+    {
+      label: 'Day 2 — Sunday 16 May',
+      items: [
+        { time: '09:00', title: 'Table Topics Contest final' },
+        { time: '11:00', title: 'Keynote', detail: 'The Story Only You Can Tell' },
+        { time: '12:30', title: 'Lunch' },
+        { time: '14:00', title: 'Education sessions' },
+        { time: '15:30', title: 'Hall of Fame and closing ceremony' },
+        { time: '16:30', title: 'Carriages' },
+      ],
+    },
+  ],
+
+  /* Inclusions are [MOCK]; the table bullets about sitting together and one
+     payment are [REAL] system behaviour. */
+  ticketPerks: {
+    individual: [
+      'Every keynote, workshop and contest final across both days',
+      'Lunch on both days',
+      'Saturday gala dinner',
+    ],
+    table: [
+      'Everything in the individual ticket — for all ten places',
+      'Your club sits together',
+      'One payment and one screenshot for the whole table',
+    ],
+  },
+
+  /* [MOCK] — a real hotel chosen as a plausible stand-in. name must match
+     seed.py (see header). Parking and room-block details are invented. */
+  venue: {
+    name: 'One Farrer Hotel',
+    address: '1 Farrer Park Station Road, Singapore 217562',
+    mapsUrl: 'https://maps.google.com/?q=One+Farrer+Hotel+Singapore',
+    mrt: 'Farrer Park (NE8) — the hotel is directly above the station. Take Exit 6.',
+    parking: 'Hotel carpark from SGD 4.50 per hour; weekend day caps apply.',
+    notes: [
+      'A room block for members making a weekend of it is being arranged — details to follow.',
+    ],
+  },
+
+  /* [MOCK] — invented names, distinct from the seeded demo attendees. */
+  committee: [
+    { name: 'Valerie Leong', role: 'Conference Chair' },
+    { name: 'Imran Shah', role: 'Deputy Chair' },
+    { name: 'Pei Shan Goh', role: 'Registrations' },
+    { name: 'Devraj Pillai', role: 'Finance' },
+    { name: 'Clara Yap', role: 'Programme' },
+    { name: 'Hafiz Rahman', role: 'Logistics' },
+    { name: 'Jonathan Seah', role: 'Marketing & Communications' },
+    { name: 'Ambika Nathan', role: 'Volunteers' },
+  ],
+
+  /* [MOCK] — invented quotes about a past conference. Replace with real,
+     attributed quotes (with permission) or delete the section's data. */
+  testimonials: [
+    {
+      quote:
+        'I came for the contest final and left with three new mentors. Nothing else in the Toastmasters year puts this many good people in one room.',
+      name: 'Elsie Tay',
+      club: 'Katong Toastmasters',
+    },
+    {
+      quote:
+        'Our club booked a table and it changed our year — we planned the whole club calendar over the gala dinner.',
+      name: 'Firdaus Zainal',
+      club: 'Alexandra Communicators',
+    },
+    {
+      quote:
+        'The workshops alone were worth the fee. I used what I learned in a client pitch the following Tuesday.',
+      name: 'Dinesh Sundaram',
+      club: 'Seletar Speakers',
+    },
+  ],
+
+  /* Answers 1–6 are [REAL] — they describe how this system actually works.
+     Answers 7–10 are [MOCK/TBC] pending committee decisions. */
+  faq: [
+    {
+      q: 'How do I pay?',
+      a: 'Register first — your confirmation email carries the bank transfer and PayNow details together with your code. Pay, take a screenshot, and upload it on the payment page. The registration team checks every payment by hand.',
+    },
+    {
+      q: 'When is my place confirmed?',
+      a: 'As soon as the team verifies your payment, you get a confirmation email. Until then your place is reserved, not confirmed.',
+    },
+    {
+      q: 'Can my club book a table?',
+      a: 'Yes — a table seats ten and is booked in one go with one payment. You do not need all ten names up front: add your guests any time until 10 May 2027, and each guest is emailed their own code as you name them.',
+    },
+    {
+      q: 'Can I change my details later?',
+      a: 'Yes. Your confirmation email has a personal My Registration link — use it to update your dietary needs, t-shirt size and contact details.',
+    },
+    {
+      q: 'What is the code in my email?',
+      a: 'Your registration code, for example AC27-0042. Guests on a table get their own codes ending -01 to -09. Quote it whenever you write to the organisers.',
+    },
+    {
+      q: 'What if my table has empty places?',
+      a: 'Unused places are not refunded, but they are not lost either — you can name a guest to an empty place any time before the roster closes on 10 May 2027.',
+    },
+    {
+      q: 'What does the fee include?',
+      a: 'All keynotes, workshops and contest finals across both days, lunch on both days, and the Saturday gala dinner.',
+    },
+    {
+      q: 'What is the dress code?',
+      a: 'Business or smart casual for the day programme. The Saturday gala dinner is formal — national dress very welcome.',
+    },
+    {
+      q: 'Can I bring a guest who is not a Toastmaster?',
+      a: 'Yes — friends and family are welcome. Every attendee needs a registered place, member or not.',
+    },
+    {
+      q: 'How do I get there, and can I park?',
+      a: 'One Farrer Hotel is directly above Farrer Park MRT (NE8). Driving, use the hotel carpark — see the venue section for details.',
+    },
+  ],
+
+  /* [MOCK] heading and body; the live fee shown next to it comes from the API. */
+  finalCta: {
+    heading: 'Your seat at AC 2027 is waiting',
+    body: 'Join three hundred Toastmasters for two days of keynotes, contest finals and connection — and be in the room when the district rises together.',
+  },
+}

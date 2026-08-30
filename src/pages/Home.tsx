@@ -1,121 +1,48 @@
 import { useQuery } from '@tanstack/react-query'
-import { CalendarDays, CreditCard, MailCheck, MapPin, UserPlus, Users } from 'lucide-react'
 import { getEvent } from '../lib/api'
-import { money } from '../lib/format'
-import { Alert, Card, LinkButton, PageHeader, Spinner } from '../components/ui'
+import Hero from '../components/home/Hero'
+import AnchorNav from '../components/home/AnchorNav'
+import WhyAttend from '../components/home/WhyAttend'
+import Speakers from '../components/home/Speakers'
+import Agenda from '../components/home/Agenda'
+import Testimonials from '../components/home/Testimonials'
+import Pricing from '../components/home/Pricing'
+import HowItWorks from '../components/home/HowItWorks'
+import VenueSection from '../components/home/VenueSection'
+import Faq from '../components/home/Faq'
+import Committee from '../components/home/Committee'
+import FinalCta from '../components/home/FinalCta'
 
-const STEPS = [
-  { Icon: UserPlus, title: 'Register', body: 'Register yourself, or book a table of ten for your club. You get a code straight away.' },
-  { Icon: CreditCard, title: 'Pay and upload', body: 'Transfer the fee, then upload your payment screenshot on the site. One payment covers a whole table.' },
-  { Icon: MailCheck, title: 'Get confirmed', body: 'The team verifies your payment and emails your confirmation.' },
-]
+/* The landing page. Copy lives in src/content/conference.ts (one file to
+   swap when the committee's real content arrives); section order is a
+   conversion argument — value before speakers before agenda, testimonials
+   directly before the price, objections (venue, FAQ) after it.
 
+   Bands alternate surface/white with three blue anchors (hero, stat band,
+   final CTA). Each section owns its background, full-bleed, with a contained
+   column inside — Home deliberately renders OUTSIDE the app's Contained
+   wrapper (see App.tsx). */
 export default function Home() {
+  /* Same query key as Register and Payment — one fetch feeds the site. The
+     page does NOT gate on it: everything except prices reads fine from the
+     content module while the API answers, or doesn't. Only Pricing shows
+     loading and error states. */
   const { data: event, isLoading, error } = useQuery({ queryKey: ['event'], queryFn: getEvent })
 
   return (
-    <div className="space-y-8">
-      <PageHeader
-        title="Annual Conference 2027"
-        lede="Register, pay and track your confirmation in one place — no forms to chase and no
-              screenshots to forward."
-      />
-
-      {isLoading && <Spinner label="Loading conference details" />}
-
-      {error && (
-        <Alert tone="error" title="Conference details are unavailable">
-          The registration service could not be reached. Please try again shortly.
-        </Alert>
-      )}
-
-      {event && (
-        <>
-          <Card>
-            <h2 className="text-2xl">{event.name}</h2>
-            {/* Four items, so a 3-column grid would leave one orphaned on its
-                own row. 2 then 4. */}
-            <dl className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="flex gap-3">
-                <CalendarDays className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
-                <div>
-                  <dt className="text-[15px] text-muted-fg">When</dt>
-                  <dd className="font-semibold">{event.dateLabel ?? 'To be announced'}</dd>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <MapPin className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
-                <div>
-                  <dt className="text-[15px] text-muted-fg">Where</dt>
-                  <dd className="font-semibold">{event.venue ?? 'To be announced'}</dd>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <CreditCard className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
-                <div>
-                  <dt className="text-[15px] text-muted-fg">Fee per place</dt>
-                  <dd className="font-semibold tnum">
-                    {money(event.fee, event.currency)}
-                    {event.priceWindow === 'EARLY_BIRD' && (
-                      <span className="ml-2 font-normal text-success">early bird</span>
-                    )}
-                  </dd>
-                </div>
-              </div>
-              {event.tableFee !== undefined && (
-                <div className="flex gap-3">
-                  <Users className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
-                  <div>
-                    <dt className="text-[15px] text-muted-fg">
-                      Table of {event.tableSeats ?? 10}
-                    </dt>
-                    <dd className="font-semibold tnum">
-                      {money(event.tableFee, event.currency)}
-                      {/* Two counters, two answers. A club president who reads
-                          "full" and stops looking while forty seats remain is
-                          the failure this line prevents. */}
-                      {event.tableBookingsAvailable === false && (
-                        <span className="ml-2 font-normal text-destructive">sold out</span>
-                      )}
-                    </dd>
-                  </div>
-                </div>
-              )}
-            </dl>
-
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <LinkButton to="/register">Register now</LinkButton>
-              <LinkButton to="/my" variant="secondary">
-                Check my registration
-              </LinkButton>
-            </div>
-          </Card>
-
-          <section aria-labelledby="how">
-            <h2 id="how" className="text-xl">
-              How it works
-            </h2>
-            <ol className="mt-4 grid gap-4 sm:grid-cols-3">
-              {STEPS.map(({ Icon, title, body }, i) => (
-                <li key={title} className="rounded-lg border border-border bg-white p-5">
-                  <div className="flex items-center gap-3">
-                    <span
-                      className="flex size-9 shrink-0 items-center justify-center rounded-full
-                                 bg-happy-yellow font-heading font-bold text-loyal-blue"
-                      aria-hidden="true"
-                    >
-                      {i + 1}
-                    </span>
-                    <Icon className="size-5 text-primary" aria-hidden="true" />
-                  </div>
-                  <h3 className="mt-3 text-lg">{title}</h3>
-                  <p className="mt-1 text-[16px] text-muted-fg">{body}</p>
-                </li>
-              ))}
-            </ol>
-          </section>
-        </>
-      )}
+    <div>
+      <Hero event={event} />
+      <AnchorNav />
+      <WhyAttend />
+      <Speakers />
+      <Agenda />
+      <Testimonials />
+      <Pricing event={event} isLoading={isLoading} error={error} />
+      <HowItWorks />
+      <VenueSection event={event} />
+      <Faq />
+      <Committee />
+      <FinalCta event={event} />
     </div>
   )
 }

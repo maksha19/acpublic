@@ -22,6 +22,9 @@ export interface PriceWindow {
 export interface EventInfo {
   name: string
   dateLabel?: string
+  /** ISO date of day one (e.g. "2027-05-15"), event-local. Drives the
+   *  days-to-go figure — a count, not a clock. */
+  startsOn?: string
   venue?: string
   city?: string
   /** The per-seat fee that applies NOW, resolved server-side from the price

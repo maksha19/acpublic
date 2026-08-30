@@ -1,20 +1,24 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { AlertTriangle, CheckCircle2, Info, Loader2 } from 'lucide-react'
-import type { RegStatus } from '../lib/types'
+import { money } from '../lib/format'
+import type { EventInfo, RegStatus } from '../lib/types'
 
 /* Hand-built rather than shadcn/ui for Phase 0: the public site needs six
    components and pulling in Radix for them is Phase 1 work. Icons are Lucide —
    never emoji, which render inconsistently and are read aloud badly by screen
    readers. */
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger'
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'inverse' | 'inverseOutline'
 
 const VARIANTS: Record<Variant, string> = {
   primary: 'bg-primary text-primary-fg hover:bg-[#00314d]',
   secondary: 'bg-white text-primary border-2 border-primary hover:bg-surface',
   ghost: 'bg-transparent text-primary hover:bg-surface',
   danger: 'bg-destructive text-white hover:bg-[#5e1c28]',
+  /* For loyal-blue bands, where `primary` would vanish into its background. */
+  inverse: 'bg-white text-primary hover:bg-white/90',
+  inverseOutline: 'border-2 border-white bg-transparent text-white hover:bg-white/10',
 }
 
 // min-h-11 is 44px — the accessibility minimum for a touch target, and these get
@@ -183,6 +187,21 @@ export function PageHeader({ title, lede }: { title: string; lede?: string }) {
       <h1 className="text-3xl sm:text-4xl">{title}</h1>
       {lede && <p className="mt-2 max-w-2xl text-lg text-muted-fg">{lede}</p>}
     </header>
+  )
+}
+
+/** "Current price X — rises to Y on date." Shared by the landing page and the
+ *  register fork so the two can never quote different prices. Rendered from the
+ *  two numbers the API resolved; working out WHICH window applies is
+ *  deliberately not done in the browser. */
+export function PriceWindowNote({ event }: { event?: EventInfo }) {
+  if (!event?.nextPriceWindow) return null
+  const from = event.nextPriceWindow.fromUtc
+  return (
+    <Alert tone="info" title={`Current price: ${money(event.fee, event.currency)} per place`}>
+      This rises to {money(event.nextPriceWindow.fee, event.currency)}
+      {from ? ` on ${new Date(from).toLocaleDateString()}` : ' later'}.
+    </Alert>
   )
 }
 

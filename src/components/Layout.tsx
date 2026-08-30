@@ -1,4 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import { ExternalLink } from 'lucide-react'
+import { CONFERENCE } from '../content/conference'
 
 /* BRAND NOTE — the Toastmasters brand manual permits exactly one logo, used
    as supplied, and forbids redrawing or recolouring it. So Phase 0 uses a plain
@@ -34,7 +36,7 @@ export default function Layout() {
               Annual Conference 2027
             </span>
             <span className="block text-[13px] uppercase tracking-[0.14em] text-white/75">
-              Toastmasters District
+              Toastmasters {CONFERENCE.district.name}
             </span>
           </NavLink>
           <nav aria-label="Main" className="flex flex-wrap gap-1">
@@ -60,16 +62,55 @@ export default function Layout() {
         </p>
       </div>
 
-      <main id="main" className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:py-10">
+      {/* Bare: pages own their container. The transactional routes get the old
+          classes back via the Contained wrapper in App.tsx; Home runs
+          full-width landing bands. */}
+      <main id="main" className="flex-1">
         <Outlet />
       </main>
 
       <footer className="border-t border-border bg-white">
-        <div className="mx-auto max-w-5xl px-4 py-6 text-[15px] text-muted-fg">
-          <p>Annual Conference 2027 · Toastmasters District</p>
-          <p className="mt-1">
-            Questions about your registration? Contact the registration team — details to follow.
-          </p>
+        <div className="mx-auto grid max-w-5xl gap-8 px-4 py-10 sm:grid-cols-3">
+          <div>
+            <p className="font-heading font-bold text-primary">Annual Conference 2027</p>
+            <p className="mt-1 text-[15px] text-muted-fg">
+              Toastmasters {CONFERENCE.district.name} · {CONFERENCE.fallbackEvent.dateLabel} ·{' '}
+              {CONFERENCE.fallbackEvent.city}
+            </p>
+          </div>
+          <div>
+            <p className="font-heading font-semibold">Contact</p>
+            <p className="mt-1 text-[15px] text-muted-fg">Questions about your registration?</p>
+            <a
+              href={`mailto:${CONFERENCE.district.contactEmail}`}
+              className="mt-1 inline-flex min-h-11 items-center break-all font-semibold
+                         text-primary underline"
+            >
+              {CONFERENCE.district.contactEmail}
+            </a>
+          </div>
+          <div>
+            <p className="font-heading font-semibold">Follow {CONFERENCE.district.name}</p>
+            {/* Text links, deliberately: the installed Lucide has no brand
+                icons (removed upstream), and four identical generic icons
+                would say less than the words do. */}
+            <ul className="mt-1 space-y-1">
+              {CONFERENCE.district.socials.map((s) => (
+                <li key={s.label}>
+                  <a
+                    href={s.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex min-h-11 items-center gap-1.5 text-[15px] font-semibold
+                               text-primary underline"
+                  >
+                    {s.label}
+                    <ExternalLink className="size-3.5" aria-hidden="true" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </footer>
     </div>

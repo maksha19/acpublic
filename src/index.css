@@ -75,6 +75,14 @@
   }
 }
 
+/* Anchor jumps on the landing page glide only for people who have not asked
+   motion to stop. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
