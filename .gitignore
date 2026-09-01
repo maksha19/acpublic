@@ -29,3 +29,6 @@ dist-ssr
 .env
 .env.*
 !.env.example
+# .env.production holds only the public API base URL (it ships in the JS
+# bundle regardless) and Workers Builds needs it at build time.
+!.env.production
