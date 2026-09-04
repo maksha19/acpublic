@@ -1,8 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import { copyFileSync, existsSync } from 'node:fs'
-import { resolve } from 'node:path'
 
 /**
  * PHASE 1: served from a Cloudflare Worker at the root of
@@ -22,31 +20,14 @@ import { resolve } from 'node:path'
  */
 const BASE = '/'
 
-/**
- * GitHub Pages has no SPA rewrite rule, so a hard refresh on /register — or any
- * emailed deep link like /my?code=... — asks GitHub for a file that does not
- * exist and gets a 404 page. GitHub does serve 404.html for unknown paths, so
- * shipping a copy of index.html under that name hands control to React Router
- * and the deep link works.
- *
- * This is the reason BrowserRouter is usable here at all instead of HashRouter.
- */
-function githubPagesSpaFallback() {
-  return {
-    name: 'gh-pages-spa-fallback',
-    apply: 'build' as const,
-    closeBundle() {
-      const index = resolve(import.meta.dirname, 'dist/index.html')
-      if (existsSync(index)) {
-        copyFileSync(index, resolve(import.meta.dirname, 'dist/404.html'))
-      }
-    },
-  }
-}
-
+// SPA deep links (a refresh on /register, an emailed /my?code=... link) are
+// handled by the Cloudflare Worker: wrangler.jsonc sets
+// assets.not_found_handling = "single-page-application", which answers any
+// unknown path with index.html. Under GitHub Pages this needed a build step
+// copying index.html to 404.html — gone with the move.
 export default defineConfig({
   base: BASE,
-  plugins: [react(), tailwindcss(), githubPagesSpaFallback()],
+  plugins: [react(), tailwindcss()],
   server: {
     // strictPort, because the API only allows the exact origins it was deployed
     // with. Vite's default is to quietly move to the next free port, and the
