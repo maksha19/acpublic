@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Search, Users } from 'lucide-react'
+import { QRCodeSVG } from 'qrcode.react'
+import { Printer, Search, Users } from 'lucide-react'
 import { getEvent, getRegistration } from '../lib/api'
 import { money, priceLine } from '../lib/format'
 import { recall, remember } from '../lib/session'
@@ -27,7 +28,7 @@ const NEXT_STEP: Partial<Record<RegStatus, string>> = {
   PENDING_PAYMENT: 'Pay the conference fee and upload your screenshot to confirm your place.',
   PAYMENT_SUBMITTED:
     'Your payment is with the registration team. Nothing is needed from you — we will email you when it has been checked.',
-  CONFIRMED: 'You are confirmed. Bring your registration code on the day.',
+  CONFIRMED: 'You are confirmed. Show the e-ticket below at the door — or just your code.',
   REJECTED: 'We could not verify your payment. Please submit corrected details.',
   CANCELLED: 'This registration has been cancelled. Contact the registration team if that is wrong.',
   REPLACED: 'This place has been transferred to another member.',
@@ -41,9 +42,10 @@ const GUEST_NEXT_STEP: Partial<Record<RegStatus, string>> = {
     'Your place is reserved. There is nothing for you to pay — the person who booked the table is settling it.',
   PAYMENT_SUBMITTED:
     'The payment for your table is with the registration team. Nothing is needed from you.',
-  CONFIRMED: 'Your place is confirmed. Bring your code on the day.',
+  CONFIRMED: 'Your place is confirmed. Show the e-ticket below at the door — or just your code.',
   REJECTED:
     'There is a query on the payment for your table. The person who booked it has been contacted — nothing is needed from you.',
+  REPLACED: 'This place has been transferred to another member by whoever booked the table.',
   CHECKED_IN: 'You are checked in. Enjoy the conference.',
 }
 
@@ -202,15 +204,53 @@ export default function MyRegistration() {
         )}
       </Card>
 
+      {/* The e-ticket, only while CONFIRMED. A replaced or cancelled code
+          renders no QR — the desk would refuse it, so showing one is a queue
+          argument waiting to happen. */}
+      {reg.status === 'CONFIRMED' && reg.ticket && (
+        <div id="ticket">
+          <Card>
+          <h2 className="text-xl">Your e-ticket</h2>
+          <div className="mt-4 flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-8">
+            <div className="rounded-lg border border-border bg-white p-4">
+              <QRCodeSVG value={reg.ticket} size={200} marginSize={0} aria-hidden="true" />
+            </div>
+            <div className="text-center sm:text-left">
+              <p className="font-heading text-2xl font-bold tracking-wide text-loyal-blue tnum">
+                {reg.code}
+              </p>
+              <p className="mt-1 text-lg font-semibold">{reg.name}</p>
+              {event?.dateLabel && (
+                <p className="mt-2 text-muted-fg">
+                  {event.dateLabel}
+                  {event.venue && <> · {event.venue}</>}
+                </p>
+              )}
+              <p className="mt-3 text-[15px] text-muted-fg">
+                Show this at the registration desk. A screenshot works; so does the code alone.
+              </p>
+              <div className="mt-4 print-hide">
+                <Button variant="secondary" onClick={() => window.print()}>
+                  <Printer className="size-4" aria-hidden="true" />
+                  Print the ticket
+                </Button>
+              </div>
+            </div>
+          </div>
+          </Card>
+        </div>
+      )}
+
       {/* The roster. Only the owner of a table sees it — a guest gets their own
-          row and nothing about the other nine. */}
+          row and nothing about the other nine. Replaced seats are history rows,
+          not places: they would make a table of ten read as eleven. */}
       {isTable && members.length > 0 && (
         <Roster
           code={reg.code}
           accessKey={accessKey}
           seats={seats}
           namedSeats={reg.namedSeats ?? 1}
-          members={members}
+          members={members.filter((m) => m.status !== 'REPLACED')}
           closed={isRosterClosed(event?.rosterCutoff)}
           cutoffLabel={event?.rosterCutoffLabel}
           onSaved={() => query.refetch()}

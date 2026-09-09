@@ -92,3 +92,25 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* "Print the ticket" prints ONLY the ticket card. visibility (not display)
+   because a hidden ancestor with display:none would take the ticket with it;
+   visibility lets the ticket opt back in. */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #ticket,
+  #ticket * {
+    visibility: visible;
+  }
+  #ticket {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    border: none;
+  }
+  #ticket .print-hide {
+    display: none;
+  }
+}

@@ -83,6 +83,9 @@ export interface Attendee {
   detailsProvidedAt?: string
   createdAt: string
   updatedAt?: string
+  /** The signed QR payload for the e-ticket. Present only while CONFIRMED,
+   *  and only on the row the caller proved a key for. */
+  ticket?: string
 }
 
 /** An attendee who is also a booking: the payer, and attendee 1. */
