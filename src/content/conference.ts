@@ -70,6 +70,20 @@ export interface CommitteeMember {
   role: string
 }
 
+/** One portfolio of the organising committee: a chair and their team. */
+export interface Portfolio {
+  name: string
+  chair: string
+  team: string[]
+}
+
+export interface Committee {
+  /** District leadership advising the conference. */
+  advisors: CommitteeMember[]
+  chair: string
+  portfolios: Portfolio[]
+}
+
 export interface Testimonial {
   quote: string
   name: string
@@ -99,7 +113,7 @@ export interface ConferenceContent {
   agendaDays: AgendaDay[]
   ticketPerks: { individual: string[]; table: string[] }
   venue: VenueDetails
-  committee: CommitteeMember[]
+  committee: Committee
   testimonials: Testimonial[]
   faq: FaqItem[]
   finalCta: { heading: string; body: string }
@@ -244,17 +258,48 @@ export const CONFERENCE: ConferenceContent = {
     notes: [],
   },
 
-  /* [MOCK] — invented names, distinct from the seeded demo attendees. */
-  committee: [
-    { name: 'Valerie Leong', role: 'Conference Chair' },
-    { name: 'Imran Shah', role: 'Deputy Chair' },
-    { name: 'Pei Shan Goh', role: 'Registrations' },
-    { name: 'Devraj Pillai', role: 'Finance' },
-    { name: 'Clara Yap', role: 'Programme' },
-    { name: 'Hafiz Rahman', role: 'Logistics' },
-    { name: 'Jonathan Seah', role: 'Marketing & Communications' },
-    { name: 'Ambika Nathan', role: 'Volunteers' },
-  ],
+  /* [REAL] — the D80 AC2027 organising committee as supplied by the
+     committee (13 Sep 2026). Names and post-nominals exactly as given. */
+  committee: {
+    advisors: [
+      { name: 'Aaron Ting, DTM', role: 'District Director' },
+      { name: 'George Chew, DTM', role: 'Program Quality Director' },
+      { name: 'Zuhriyyah Ariffin', role: 'Club Growth Director' },
+    ],
+    chair: 'Ho Chu Lin, DTM',
+    portfolios: [
+      { name: 'Program', chair: 'Jenny Goh', team: ['Eugene Low', 'Anne Lee'] },
+      {
+        name: 'Gala Night',
+        chair: 'Julie Ong, DTM',
+        team: ['Kathyrn Galatis', 'Robekka Purba', 'Edmund Chew, DTM'],
+      },
+      { name: 'Publicity', chair: 'Goh Shu Ching', team: ['Suzanne Loh, DTM', 'Gordon Yit'] },
+      {
+        name: 'Marketing',
+        chair: 'Lim Jun Jie, DTM',
+        team: ['Veron Lee, DTM', 'Alice Cheong, DTM', 'Yip Li Xian'],
+      },
+      { name: 'Sponsorship', chair: 'Wiwiek Najihah', team: ['Li Shan Shan, DTM', 'Terry Lee, DTM'] },
+      {
+        name: 'Admin & Registration',
+        chair: 'Lim Cheng Boon, DTM',
+        team: ['Jocelyn Lee', 'Michael Yonathan', 'Jhunilyn Ofiana', 'Niza Khalil, DTM', 'Sandy Goh'],
+      },
+      { name: 'Finance', chair: 'Charlene Wong', team: ['Koh Mee Zhen'] },
+      {
+        name: 'Logistics',
+        chair: 'Jamal Shahul Hameed',
+        team: ['Ma. Theresa Ang', 'Govindan Rathakrishnan', 'Tan Yan Kit'],
+      },
+      { name: 'Hospitality', chair: 'Sam Lim, DTM', team: ['Patricia Lum, DTM', 'Mark Alan Franco Opao'] },
+      {
+        name: 'Technical',
+        chair: 'Manikandan Shanmugam',
+        team: ['Bimla Bai Jeyasingh', 'Sankar Palani, DTM'],
+      },
+    ],
+  },
 
   /* [MOCK] — invented quotes about a past conference. Replace with real,
      attributed quotes (with permission) or delete the section's data. */
