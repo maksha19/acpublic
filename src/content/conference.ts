@@ -180,23 +180,23 @@ export const CONFERENCE: ConferenceContent = {
      so a demo never shows the same fake person on stage and in the queue. */
   speakers: [
     {
-      name: 'Dr. Adeline Pang, DTM',
-      credentials: 'Past District Director, District 80',
+      name: 'Hani Nur Zaihanirah Zaini, DTM. ',
+      credentials: 'International Director,',
       session: 'Leading Beyond the Lectern',
-      blurb: 'What twenty years of club leadership teach about influence when nobody has to listen to you.',
+      blurb: '    She made history as the first Sarawakian woman elected to the Toastmasters International Board of Directors. She will share her journey and the lessons she learned along the way.',
     },
-    {
-      name: 'Rizal Hamid',
-      credentials: 'Accredited Speaker',
-      session: 'The Story Only You Can Tell',
-      blurb: 'Why the speech that scares you most is the one your audience came for — and why this is your stage.',
-    },
-    {
-      name: 'Sanjay Krishnamoorthy, DTM',
-      credentials: 'Region Advisor, Region 14',
-      session: 'From Member to Movement',
-      blurb: 'How ordinary clubs become the ones everyone wants to join.',
-    },
+    // {
+    //   name: 'Rizal Hamid',
+    //   credentials: 'Accredited Speaker',
+    //   session: 'The Story Only You Can Tell',
+    //   blurb: 'Why the speech that scares you most is the one your audience came for — and why this is your stage.',
+    // },
+    // {
+    //   name: 'Sanjay Krishnamoorthy, DTM',
+    //   credentials: 'Region Advisor, Region 14',
+    //   session: 'From Member to Movement',
+    //   blurb: 'How ordinary clubs become the ones everyone wants to join.',
+    // },
   ],
 
   /* Day labels are [REAL] (29 May 2027 is a Saturday). The four highlight
@@ -307,7 +307,7 @@ export const CONFERENCE: ConferenceContent = {
     {
       quote:
         'I came for the contest final and left with three new mentors. Nothing else in the Toastmasters year puts this many good people in one room.',
-      name: 'Elsie Tay',
+      name: 'Jackie Tan',
       club: 'Katong Toastmasters',
     },
     {
