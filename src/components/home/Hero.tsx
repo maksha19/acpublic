@@ -27,10 +27,24 @@ export default function Hero({ event }: { event?: EventInfo }) {
           <span className="block text-2xl font-semibold text-white/90 sm:text-3xl">
             Annual Conference 2027
           </span>
-          <span className="mt-1 block text-4xl sm:text-6xl">{CONFERENCE.hero.theme}</span>
+          <span className="mt-1 block font-display text-4xl sm:text-6xl">{CONFERENCE.hero.theme}</span>
         </h1>
 
         <p className="mt-4 max-w-2xl text-lg text-white/85">{CONFERENCE.hero.tagline}</p>
+
+        {/* The poster's four highlights, as a list — a screen reader hears
+            four items, not one line with bullets read as "dot". */}
+        <ul className="mt-5 flex flex-wrap gap-2" aria-label="Event highlights">
+          {CONFERENCE.hero.highlights.map((h) => (
+            <li
+              key={h}
+              className="inline-flex min-h-9 items-center rounded-full border border-white/40
+                         px-3 font-heading text-[15px] font-semibold text-white"
+            >
+              {h}
+            </li>
+          ))}
+        </ul>
 
         <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-[16px]">
           <span className="inline-flex items-center gap-2">
@@ -44,8 +58,8 @@ export default function Hero({ event }: { event?: EventInfo }) {
           {days !== null && (
             // A count, not a clock — computed once per render, nothing ticks.
             <span
-              className="inline-flex items-center rounded-full bg-happy-yellow px-3 py-1
-                         font-heading text-[15px] font-semibold text-loyal-blue"
+              className="inline-flex items-center rounded-full bg-accent px-3 py-1
+                         font-heading text-[15px] font-semibold text-primary"
             >
               {days === 0 ? 'Happening today' : days === 1 ? '1 day to go' : `${days} days to go`}
             </span>

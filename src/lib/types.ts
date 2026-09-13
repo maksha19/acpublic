@@ -16,6 +16,8 @@ export type PaymentStatus = 'PENDING' | 'APPROVED' | 'REJECTED'
 export interface PriceWindow {
   label: string
   fee: number
+  /** Per place on a whole table. Equals `fee` when no group rate is set. */
+  groupFee?: number
   fromUtc?: string
 }
 
@@ -31,6 +33,10 @@ export interface EventInfo {
    *  windows. Never recomputed here — two implementations of a pricing rule
    *  disagree on the one day it matters most. */
   fee: number
+  /** The per-place GROUP rate that applies now — what each of the ten places
+   *  on a table costs. Resolved server-side alongside `fee`; equals `fee` when
+   *  the committee has not set a separate group rate. */
+  groupFee?: number
   currency: string
   registrationOpen?: boolean
   priceWindow?: string
@@ -38,7 +44,7 @@ export interface EventInfo {
   nextPriceWindow?: PriceWindow | null
 
   tableSeats?: number
-  /** fee × tableSeats, also resolved server-side. */
+  /** groupFee × tableSeats, also resolved server-side. */
   tableFee?: number
   rosterCutoff?: string
   rosterCutoffLabel?: string

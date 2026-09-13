@@ -25,6 +25,14 @@ export default function Pricing({
   error: unknown
 }) {
   const tableSeats = event?.tableSeats ?? 10
+  // Two per-place rates from the API: `fee` for one person, `groupFee` for
+  // each place on a table. The saving is shown only when it is a real number
+  // — a difference between two figures the server resolved, not a rule.
+  const groupFee = event?.groupFee ?? event?.fee
+  const saving =
+    event && groupFee !== undefined && Number(event.fee) > Number(groupFee)
+      ? Number(event.fee) - Number(groupFee)
+      : 0
   // Two counters, two answers — whole tables can sell out while individual
   // places remain. Same idiom as the register fork: undefined stays open.
   const soloOpen = event?.individualBookingsAvailable !== false
@@ -69,8 +77,14 @@ export default function Pricing({
               Icon={Users}
               title={`Table of ${tableSeats}`}
               price={money(event.tableFee, event.currency)}
-              priceNote={`${tableSeats} places · one payment`}
-              badge={event.priceWindow === 'EARLY_BIRD' ? 'Early bird' : undefined}
+              priceNote={`${tableSeats} places · ${money(groupFee, event.currency)} per place · one payment`}
+              badge={
+                saving > 0
+                  ? `Group rate — save ${money(saving, event.currency)} per place`
+                  : event.priceWindow === 'EARLY_BIRD'
+                    ? 'Early bird'
+                    : undefined
+              }
               bullets={CONFERENCE.ticketPerks.table}
               soldOut={open && !tableOpen}
               soldOutNote={
@@ -143,15 +157,15 @@ function PriceCard({
         </div>
         {badge && (
           <span
-            className="rounded-full bg-happy-yellow px-3 py-1 font-heading text-sm font-semibold
-                       text-loyal-blue"
+            className="rounded-full bg-accent px-3 py-1 font-heading text-sm font-semibold
+                       text-primary"
           >
             {badge}
           </span>
         )}
       </div>
 
-      <p className="mt-3 font-heading text-2xl font-bold text-loyal-blue tnum">{price}</p>
+      <p className="mt-3 font-heading text-2xl font-bold text-primary tnum">{price}</p>
       <p className="text-[15px] text-muted-fg">{priceNote}</p>
 
       <ul className="mt-4 flex-1 space-y-2">

@@ -55,8 +55,8 @@ export default function Layout() {
 
       {/* A visible, honest banner. The committee will see this demo and a
           prototype that does not say it is one gets mistaken for finished. */}
-      <div className="bg-happy-yellow">
-        <p className="mx-auto max-w-5xl px-4 py-2 text-[15px] font-semibold text-loyal-blue">
+      <div className="bg-accent">
+        <p className="mx-auto max-w-5xl px-4 py-2 text-[15px] font-semibold text-primary">
           Demonstration only — Phase 0 prototype. Data here is not real and emails are not
           delivered.
         </p>

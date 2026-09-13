@@ -19,7 +19,7 @@ export default function HowItWorks() {
             <div className="flex items-center gap-3">
               <span
                 className="flex size-9 shrink-0 items-center justify-center rounded-full
-                           bg-happy-yellow font-heading font-bold text-loyal-blue"
+                           bg-accent font-heading font-bold text-primary"
                 aria-hidden="true"
               >
                 {i + 1}

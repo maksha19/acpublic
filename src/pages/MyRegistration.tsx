@@ -166,7 +166,7 @@ export default function MyRegistration() {
             <p className="text-[15px] uppercase tracking-[0.1em] text-muted-fg">
               {isTable ? 'Booking code' : isGuest ? 'Your code' : 'Registration code'}
             </p>
-            <p className="font-heading text-2xl font-bold tracking-wide text-loyal-blue tnum">
+            <p className="font-heading text-2xl font-bold tracking-wide text-primary tnum">
               {reg.code}
             </p>
           </div>
@@ -216,7 +216,7 @@ export default function MyRegistration() {
               <QRCodeSVG value={reg.ticket} size={200} marginSize={0} aria-hidden="true" />
             </div>
             <div className="text-center sm:text-left">
-              <p className="font-heading text-2xl font-bold tracking-wide text-loyal-blue tnum">
+              <p className="font-heading text-2xl font-bold tracking-wide text-primary tnum">
                 {reg.code}
               </p>
               <p className="mt-1 text-lg font-semibold">{reg.name}</p>

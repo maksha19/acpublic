@@ -14,7 +14,8 @@ export default function Testimonials() {
             className="flex flex-col rounded-lg border border-border bg-white p-5"
           >
             <Quote className="size-6 text-secondary" aria-hidden="true" />
-            <blockquote className="mt-3 flex-1">{t.quote}</blockquote>
+            {/* Brand: quotes set in Alice, italic. */}
+            <blockquote className="mt-3 flex-1 font-quote italic">{t.quote}</blockquote>
             <figcaption className="mt-4 flex items-center gap-3">
               <InitialsAvatar name={t.name} className="size-10 text-sm" />
               <span>

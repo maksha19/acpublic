@@ -44,7 +44,7 @@ export default function Roster({
     <Card>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="text-xl">Who is coming</h2>
-        <p className="font-heading font-semibold text-loyal-blue tnum">
+        <p className="font-heading font-semibold text-primary tnum">
           {namedSeats} of {seats} details provided
         </p>
       </div>

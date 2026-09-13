@@ -99,7 +99,7 @@ export default function Register() {
                 {' · '}
                 {priceLine(
                   seats,
-                  event.fee,
+                  isTable ? (event.groupFee ?? event.fee) : event.fee,
                   isTable ? event.tableFee : event.fee,
                   event.currency,
                 )}
@@ -274,7 +274,11 @@ function BookingChoice({
         Icon={Users}
         title={`A table of ${tableSeats}`}
         price={money(event?.tableFee, event?.currency)}
-        priceNote={`${tableSeats} places · one payment`}
+        priceNote={
+          event
+            ? `${tableSeats} places · ${money(event.groupFee ?? event.fee, event.currency)} per place · one payment`
+            : `${tableSeats} places · one payment`
+        }
         available={tableOpen}
         unavailableNote={
           soloOpen
@@ -327,7 +331,7 @@ function Option({
         <Icon className="size-6 shrink-0 text-primary" aria-hidden="true" />
         <h2 className="text-xl">{title}</h2>
       </div>
-      <p className="mt-3 font-heading text-2xl font-bold text-loyal-blue tnum">{price}</p>
+      <p className="mt-3 font-heading text-2xl font-bold text-primary tnum">{price}</p>
       <p className="text-[15px] text-muted-fg">{priceNote}</p>
 
       <ul className="mt-4 flex-1 space-y-2">
@@ -388,15 +392,15 @@ function Registered({
             : 'Your place is reserved but not yet confirmed. Payment comes next.'}
         </p>
 
-        <div className="my-6 rounded-md bg-happy-yellow px-5 py-4 text-center">
-          <p className="text-[15px] uppercase tracking-[0.1em] text-loyal-blue">
+        <div className="my-6 rounded-md bg-accent px-5 py-4 text-center">
+          <p className="text-[15px] uppercase tracking-[0.1em] text-primary">
             {isTable ? 'Your booking code' : 'Your registration code'}
           </p>
-          <p className="font-heading text-3xl font-bold tracking-wide text-loyal-blue tnum">
+          <p className="font-heading text-3xl font-bold tracking-wide text-primary tnum">
             {code}
           </p>
           {isTable && (
-            <p className="mt-1 text-[15px] text-loyal-blue">
+            <p className="mt-1 text-[15px] text-primary">
               Your guests will get their own codes, {code}-01 to {code}-
               {String(tableSeats - 1).padStart(2, '0')}
             </p>

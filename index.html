@@ -5,30 +5,23 @@
     <!-- No maximum-scale / user-scalable=no: members skew older and pinch-zoom
          on a phone in daylight is exactly the behaviour we must not block. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#004165" />
+    <meta name="theme-color" content="#0D336B" />
     <!-- District name duplicated from src/content/conference.ts — static HTML
          cannot import it. Change both together. -->
     <meta
       name="description"
-      content="Toastmasters District 80 Annual Conference 2027 — 15–16 May 2027, Singapore. Keynotes, contest finals and the gala dinner. Register for yourself or book a table of ten."
+      content="Your Story, Your Stage — Toastmasters District 80 Annual Conference 2027, 29–30 May 2027, The Istana Ballroom, Singapore. Keynote speeches, champion insights, speech contest finals and the gala dinner. Register for yourself or book a table of ten at the group rate."
     />
-    <title>Annual Conference 2027 — Toastmasters District 80</title>
-    <meta property="og:title" content="Annual Conference 2027 — Toastmasters District 80" />
+    <title>Your Story, Your Stage — AC 2027, Toastmasters District 80</title>
+    <meta property="og:title" content="Your Story, Your Stage — Annual Conference 2027, Toastmasters District 80" />
     <meta
       property="og:description"
-      content="Two days of keynotes, contest finals and connection — 15–16 May 2027, Singapore."
+      content="Keynote speeches, champion insights, speech contest finals and the gala dinner — 29–30 May 2027, The Istana Ballroom, Singapore."
     />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-    <!-- Toastmasters brand typefaces: Montserrat for headings, Source Sans 3
-         for body. Loaded from Google Fonts with a system fallback so the page
-         is readable before the webfont arrives. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Brand typefaces (Libre Franklin, Aileron, Alice) are self-hosted via
+         @fontsource and imported in src/main.tsx — no Google Fonts request. -->
   </head>
   <body>
     <div id="root"></div>

@@ -91,7 +91,9 @@ export interface ConferenceContent {
   /** Mirrors seed.py EVENT so the hero renders before (or without) the API.
    *  If the seed's dates change, change these too. */
   fallbackEvent: { dateLabel: string; startsOn: string; city: string }
-  hero: { theme: string; tagline: string }
+  /** The theme is the committee's headline; `highlights` is the programme in
+   *  four words each, as printed on the poster. */
+  hero: { theme: string; tagline: string; highlights: string[] }
   whyAttend: WhyAttendItem[]
   speakers: Speaker[]
   agendaDays: AgendaDay[]
@@ -123,38 +125,40 @@ export const CONFERENCE: ConferenceContent = {
     contactEmail: 'ac2027@d80toastmasters.org',
   },
 
-  /* [REAL] — mirrors ac-infra/scripts/seed.py EVENT. */
-  fallbackEvent: { dateLabel: '15–16 May 2027', startsOn: '2027-05-15', city: 'Singapore' },
+  /* [REAL] — committee's dates (13 Sep 2026); mirrors ac-infra/scripts/seed.py EVENT. */
+  fallbackEvent: { dateLabel: '29–30 May 2027', startsOn: '2027-05-29', city: 'Singapore' },
 
-  /* [MOCK] — the theme is the committee's biggest branding decision; this one
-     is a placeholder to size the hero. */
+  /* [REAL] — the committee's theme and event highlights (13 Sep 2026). The
+     tagline is ours, written around them. */
   hero: {
-    theme: 'Rise Together',
+    theme: 'Your Story, Your Stage',
     tagline:
-      'Two days of keynotes, contest finals and connection with Toastmasters from every corner of Singapore.',
+      'Two days of keynotes, champion insights, the speech contest finals and a gala dinner — with Toastmasters from every corner of Singapore.',
+    highlights: ['Keynote Speeches', 'Champion Insights', 'Speech Contest Finals', 'Gala Dinner'],
   },
 
-  /* [MOCK] copy; the member and club numbers echoed in "Connect" are [REAL]. */
+  /* The four titles are the committee's [REAL] event highlights; the body
+     copy is [MOCK] and the member/club numbers in "Champion insights" are [REAL]. */
   whyAttend: [
     {
       Icon: Mic,
-      title: 'Learn',
-      body: 'Keynotes and hands-on workshops from speakers and leaders at the top of their craft.',
-    },
-    {
-      Icon: Trophy,
-      title: 'Watch the finals',
-      body: 'The International Speech and Table Topics contest finals — the best of the district on one stage.',
+      title: 'Keynote speeches',
+      body: 'Speakers at the top of their craft on what it takes to find your story — and tell it so it lands.',
     },
     {
       Icon: Users,
-      title: 'Connect',
-      body: 'One weekend with members from 200+ clubs. Your next mentor, evaluator or co-organiser is in the room.',
+      title: 'Champion insights',
+      body: 'Past champions and district leaders on how they got there, in conversation with members from 200+ clubs.',
+    },
+    {
+      Icon: Trophy,
+      title: 'Speech contest finals',
+      body: 'The International Speech and Table Topics finals — the best of District 80 on one stage.',
     },
     {
       Icon: Award,
-      title: 'Celebrate',
-      body: 'The gala dinner, the Hall of Fame and a year of club achievements, honoured properly.',
+      title: 'Gala dinner',
+      body: 'Saturday night: dinner, awards and a year of club achievements, honoured properly.',
     },
   ],
 
@@ -171,7 +175,7 @@ export const CONFERENCE: ConferenceContent = {
       name: 'Rizal Hamid',
       credentials: 'Accredited Speaker',
       session: 'The Story Only You Can Tell',
-      blurb: 'Why the speech that scares you most is the one your audience came for.',
+      blurb: 'Why the speech that scares you most is the one your audience came for — and why this is your stage.',
     },
     {
       name: 'Sanjay Krishnamoorthy, DTM',
@@ -181,16 +185,17 @@ export const CONFERENCE: ConferenceContent = {
     },
   ],
 
-  /* Day labels are [REAL] (15 May 2027 is a Saturday). Times and programme
-     order are [MOCK] — the printed programme is the committee's call. */
+  /* Day labels are [REAL] (29 May 2027 is a Saturday). The four highlight
+     slots are [REAL] programme items; times and everything else are [MOCK] —
+     the printed programme is the committee's call. */
   agendaDays: [
     {
-      label: 'Day 1 — Saturday 15 May',
+      label: 'Day 1 — Saturday 29 May',
       items: [
         { time: '08:30', title: 'Registration and coffee' },
         { time: '09:30', title: 'Opening ceremony' },
-        { time: '10:15', title: 'Keynote', detail: 'Leading Beyond the Lectern' },
-        { time: '11:30', title: 'Concurrent workshops' },
+        { time: '10:15', title: 'Keynote speech', detail: 'Leading Beyond the Lectern' },
+        { time: '11:30', title: 'Champion insights', detail: 'Past champions in conversation' },
         { time: '13:00', title: 'Lunch' },
         { time: '14:30', title: 'International Speech Contest final' },
         { time: '17:00', title: 'Break — check in, dress up' },
@@ -198,10 +203,10 @@ export const CONFERENCE: ConferenceContent = {
       ],
     },
     {
-      label: 'Day 2 — Sunday 16 May',
+      label: 'Day 2 — Sunday 30 May',
       items: [
         { time: '09:00', title: 'Table Topics Contest final' },
-        { time: '11:00', title: 'Keynote', detail: 'The Story Only You Can Tell' },
+        { time: '11:00', title: 'Keynote speech', detail: 'The Story Only You Can Tell' },
         { time: '12:30', title: 'Lunch' },
         { time: '14:00', title: 'Education sessions' },
         { time: '15:30', title: 'Hall of Fame and closing ceremony' },
@@ -220,22 +225,23 @@ export const CONFERENCE: ConferenceContent = {
     ],
     table: [
       'Everything in the individual ticket — for all ten places',
+      'The group rate: a lower price per place than booking one at a time',
       'Your club sits together',
       'One payment and one screenshot for the whole table',
     ],
   },
 
-  /* [MOCK] — a real hotel chosen as a plausible stand-in. name must match
-     seed.py (see header). Parking and room-block details are invented. */
+  /* [REAL] name and address — the committee's venue (13 Sep 2026). name must
+     match seed.py (see header). The MRT and parking lines are [TBC]: the
+     nearest station is right, the walking time and carpark details need
+     confirming with the venue before launch. */
   venue: {
-    name: 'One Farrer Hotel',
-    address: '1 Farrer Park Station Road, Singapore 217562',
-    mapsUrl: 'https://maps.google.com/?q=One+Farrer+Hotel+Singapore',
-    mrt: 'Farrer Park (NE8) — the hotel is directly above the station. Take Exit 6.',
-    parking: 'Hotel carpark from SGD 4.50 per hour; weekend day caps apply.',
-    notes: [
-      'A room block for members making a weekend of it is being arranged — details to follow.',
-    ],
+    name: 'The Istana Ballroom',
+    address: '11 Tanjong Katong Road, Singapore 437157',
+    mapsUrl: 'https://maps.google.com/?q=11+Tanjong+Katong+Road+Singapore+437157',
+    mrt: 'Paya Lebar (EW8 / CC9) is the nearest station — about a ten-minute walk along Tanjong Katong Road.',
+    parking: 'Parking is available at the venue and nearby — rates to be confirmed.',
+    notes: [],
   },
 
   /* [MOCK] — invented names, distinct from the seeded demo attendees. */
@@ -286,7 +292,7 @@ export const CONFERENCE: ConferenceContent = {
     },
     {
       q: 'Can my club book a table?',
-      a: 'Yes — a table seats ten and is booked in one go with one payment. You do not need all ten names up front: add your guests any time until 10 May 2027, and each guest is emailed their own code as you name them.',
+      a: 'Yes — a table seats ten, is booked in one go with one payment, and gets the group rate: a lower price per place. You do not need all ten names up front: add your guests any time until 24 May 2027, and each guest is emailed their own code as you name them.',
     },
     {
       q: 'Can I change my details later?',
@@ -298,11 +304,11 @@ export const CONFERENCE: ConferenceContent = {
     },
     {
       q: 'What if my table has empty places?',
-      a: 'Unused places are not refunded, but they are not lost either — you can name a guest to an empty place any time before the roster closes on 10 May 2027.',
+      a: 'Unused places are not refunded, but they are not lost either — you can name a guest to an empty place any time before the roster closes on 24 May 2027.',
     },
     {
       q: 'What does the fee include?',
-      a: 'All keynotes, workshops and contest finals across both days, lunch on both days, and the Saturday gala dinner.',
+      a: 'All keynote speeches, champion insight sessions and contest finals across both days, lunch on both days, and the Saturday gala dinner. Early-bird and group prices are shown in the Tickets section and change on the dates given there.',
     },
     {
       q: 'What is the dress code?',
@@ -314,13 +320,13 @@ export const CONFERENCE: ConferenceContent = {
     },
     {
       q: 'How do I get there, and can I park?',
-      a: 'One Farrer Hotel is directly above Farrer Park MRT (NE8). Driving, use the hotel carpark — see the venue section for details.',
+      a: 'The Istana Ballroom is at 11 Tanjong Katong Road, a short walk from Paya Lebar MRT (EW8 / CC9). Driving, parking is available at and around the venue — see the venue section for details.',
     },
   ],
 
   /* [MOCK] heading and body; the live fee shown next to it comes from the API. */
   finalCta: {
-    heading: 'Your seat at AC 2027 is waiting',
-    body: 'Join three hundred Toastmasters for two days of keynotes, contest finals and connection — and be in the room when the district rises together.',
+    heading: 'Your story. Your stage. Your seat is waiting.',
+    body: 'Join three hundred Toastmasters for two days of keynote speeches, champion insights, the contest finals and the gala dinner — and be in the room when District 80 takes the stage.',
   },
 }

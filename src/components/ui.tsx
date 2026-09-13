@@ -12,11 +12,11 @@ import type { EventInfo, RegStatus } from '../lib/types'
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'inverse' | 'inverseOutline'
 
 const VARIANTS: Record<Variant, string> = {
-  primary: 'bg-primary text-primary-fg hover:bg-[#00314d]',
+  primary: 'bg-primary text-primary-fg hover:bg-[#092650]',
   secondary: 'bg-white text-primary border-2 border-primary hover:bg-surface',
   ghost: 'bg-transparent text-primary hover:bg-surface',
-  danger: 'bg-destructive text-white hover:bg-[#5e1c28]',
-  /* For loyal-blue bands, where `primary` would vanish into its background. */
+  danger: 'bg-destructive text-white hover:bg-[#5c1c27]',
+  /* For navy bands, where `primary` would vanish into its background. */
   inverse: 'bg-white text-primary hover:bg-white/90',
   inverseOutline: 'border-2 border-white bg-transparent text-white hover:bg-white/10',
 }
@@ -131,10 +131,10 @@ export function Alert({
   children?: ReactNode
 }) {
   const tones = {
-    info: { cls: 'border-primary bg-[#F0F5F8] text-ink', Icon: Info },
-    success: { cls: 'border-success bg-[#EEF6F2] text-ink', Icon: CheckCircle2 },
-    warning: { cls: 'border-happy-yellow bg-[#FEFBEC] text-ink', Icon: AlertTriangle },
-    error: { cls: 'border-destructive bg-[#FBF5F6] text-ink', Icon: AlertTriangle },
+    info: { cls: 'border-primary bg-[#EEF2F8] text-ink', Icon: Info },
+    success: { cls: 'border-success bg-[#EDF4EE] text-ink', Icon: CheckCircle2 },
+    warning: { cls: 'border-accent bg-[#FFF5E6] text-ink', Icon: AlertTriangle },
+    error: { cls: 'border-destructive bg-[#F9EFF0] text-ink', Icon: AlertTriangle },
   }[tone]
   return (
     <div className={`flex gap-3 rounded-md border-l-4 p-4 ${tones.cls}`}>
@@ -151,7 +151,7 @@ export function Alert({
    same language on the page as in the email. Colour is never the only signal —
    every badge carries text. */
 const STATUS_META: Record<RegStatus, { label: string; cls: string }> = {
-  PENDING_PAYMENT: { label: 'Awaiting payment', cls: 'bg-happy-yellow text-loyal-blue' },
+  PENDING_PAYMENT: { label: 'Awaiting payment', cls: 'bg-accent text-primary' },
   PAYMENT_SUBMITTED: { label: 'Under review', cls: 'bg-white text-primary border-2 border-primary' },
   CONFIRMED: { label: 'Confirmed', cls: 'bg-success text-white' },
   REJECTED: { label: 'Action needed', cls: 'bg-destructive text-white' },
@@ -196,11 +196,27 @@ export function PageHeader({ title, lede }: { title: string; lede?: string }) {
  *  deliberately not done in the browser. */
 export function PriceWindowNote({ event }: { event?: EventInfo }) {
   if (!event?.nextPriceWindow) return null
-  const from = event.nextPriceWindow.fromUtc
+  const next = event.nextPriceWindow
+  const from = next.fromUtc
+  const when = from
+    ? ` on ${new Date(from).toLocaleDateString('en-SG', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Singapore' })}`
+    : ' later'
+  const group = event.groupFee ?? event.fee
+  const nextGroup = next.groupFee ?? next.fee
+  const hasGroupRate = Number(group) !== Number(event.fee) || Number(nextGroup) !== Number(next.fee)
   return (
     <Alert tone="info" title={`Current price: ${money(event.fee, event.currency)} per place`}>
-      This rises to {money(event.nextPriceWindow.fee, event.currency)}
-      {from ? ` on ${new Date(from).toLocaleDateString()}` : ' later'}.
+      {hasGroupRate ? (
+        <>
+          Book a table and each place is {money(group, event.currency)}. Prices rise{when}: to{' '}
+          {money(next.fee, event.currency)} per place, or {money(nextGroup, event.currency)} on a table.
+        </>
+      ) : (
+        <>
+          This rises to {money(next.fee, event.currency)}
+          {when}.
+        </>
+      )}
     </Alert>
   )
 }

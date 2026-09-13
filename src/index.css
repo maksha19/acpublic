@@ -1,41 +1,58 @@
 @import "tailwindcss";
 
 /**
- * Toastmasters brand tokens. Straight from the brand manual — see
- * TECHNICAL.md §3. Components must reference the SEMANTIC names
- * (bg-primary, border-border) and never the raw brand names, so a future
- * brand revision is a one-file change.
+ * AC2027 brand tokens — ac-public/AC2027_Brand_Guidelines.md. Components must
+ * reference the SEMANTIC names (bg-primary, border-border, bg-accent) and
+ * never the raw brand names, so a future brand revision is a one-file change.
  *
- * Contrast, hand-checked against white:
- *   Loyal Blue  #004165  10.8:1  AAA — safe for body text
- *   True Maroon #772432  10.1:1  AAA — safe for body text
- *   Cool Gray   #A9B2B1   2.2:1  FAILS AA — borders and rules ONLY, never text
- *   Happy Yellow#F2DF74   1.4:1  never a text colour; use as a background with
- *                                Loyal Blue on top (8.0:1, AAA)
+ * Contrast, hand-checked against white / cream:
+ *   Navy Blue    #0D336B  12.6:1  AAA — safe for body text
+ *   Dark Maroon  #792634   9.3:1  AAA — safe for body text
+ *   Near Black   #252525  15.3:1  AAA — body text
+ *   Light Grey   #D2D2D2   1.5:1  FAILS AA — borders and rules ONLY, never text
+ *   Orange/Gold  #F9AA45   1.9:1  never a text colour; use as a background with
+ *                                 Navy Blue on top (6.6:1, AA for any size)
+ *   Slate        #658593   3.9:1  large text only; the muted text colour below
+ *                                 is darkened to pass AA at body sizes
  */
 @theme {
-  /* Brand */
-  --color-loyal-blue: #004165;
-  --color-true-maroon: #772432;
-  --color-cool-gray: #a9b2b1;
-  --color-happy-yellow: #f2df74;
+  /* Brand — primary palette */
+  --color-navy: #0d336b;
+  --color-maroon: #792634;
+  --color-gold: #f9aa45;
+  --color-cream: #fffbef;
+  --color-light-grey: #d2d2d2;
+  --color-near-black: #252525;
+  /* Brand — secondary palette */
+  --color-slate: #658593;
+  --color-deep-maroon: #3b0104;
+  --color-golden-yellow: #ffbd59;
+  --color-off-white: #fafafa;
+  --color-forest-green: #225d2c;
 
   /* Semantic aliases */
-  --color-primary: var(--color-loyal-blue);
+  --color-primary: var(--color-navy);
   --color-primary-fg: #ffffff;
-  --color-secondary: var(--color-true-maroon);
-  --color-accent-bg: var(--color-happy-yellow);
-  --color-border: var(--color-cool-gray);
-  --color-ink: #1f2a2e;
-  --color-muted-fg: #4a5a62; /* NOT Cool Gray — that fails AA for text */
-  --color-surface: #f4f6f7;
-  --color-success: #146b4f;
-  --color-warning-fg: #8a6d1f;
-  --color-destructive: var(--color-true-maroon);
-  --color-ring: var(--color-loyal-blue);
+  --color-secondary: var(--color-maroon);
+  --color-accent: var(--color-gold);
+  --color-accent-fg: var(--color-navy);
+  --color-border: var(--color-light-grey);
+  --color-ink: var(--color-near-black);
+  --color-muted-fg: #4f6672; /* Slate, darkened to 6.2:1 on cream for body text */
+  --color-surface: var(--color-cream);
+  --color-success: var(--color-forest-green);
+  --color-warning-fg: #8a5a12;
+  --color-destructive: var(--color-maroon);
+  --color-ring: var(--color-navy);
 
-  --font-heading: "Montserrat", Arial, sans-serif;
-  --font-body: "Source Sans 3", Arial, sans-serif;
+  /* Brand type: Libre Franklin Bold for the page header, Aileron for
+     everything else, Alice italic for quotes. Loaded from @fontsource in
+     main.tsx (self-hosted, no third-party request), with system fallbacks
+     so the page is readable before the webfonts arrive. */
+  --font-display: "Libre Franklin", "Helvetica Neue", Arial, sans-serif;
+  --font-heading: "Aileron", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Aileron", "Helvetica Neue", Arial, sans-serif;
+  --font-quote: "Alice", Georgia, serif;
 }
 
 @layer base {
@@ -52,13 +69,27 @@
     line-height: 1.6;
   }
 
-  h1,
-  h2,
-  h3 {
+  /* Brand: Header = Libre Franklin Bold; secondary and section headers =
+     Aileron (bold / regular). Sizes are set per element in the components. */
+  h1 {
+    font-family: var(--font-display);
+    color: var(--color-primary);
+    font-weight: 700;
+    line-height: 1.15;
+  }
+
+  h2 {
     font-family: var(--font-heading);
-    color: var(--color-loyal-blue);
+    color: var(--color-primary);
     font-weight: 700;
     line-height: 1.2;
+  }
+
+  h3 {
+    font-family: var(--font-heading);
+    color: var(--color-primary);
+    font-weight: 600;
+    line-height: 1.25;
   }
 
   /* Never remove the focus ring — make it a good one. The registration desk
