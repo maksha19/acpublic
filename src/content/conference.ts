@@ -239,7 +239,6 @@ export const CONFERENCE: ConferenceContent = {
     ],
     table: [
       'Everything in the individual ticket — for all ten places',
-      'The group rate: a lower price per place than booking one at a time',
       'Your club sits together',
       'One payment and one screenshot for the whole table',
     ],
@@ -337,7 +336,7 @@ export const CONFERENCE: ConferenceContent = {
     },
     {
       q: 'Can my club book a table?',
-      a: 'Yes — a table seats ten, is booked in one go with one payment, and gets the group rate: a lower price per place. You do not need all ten names up front: add your guests any time until 24 May 2027, and each guest is emailed their own code as you name them.',
+      a: 'Yes — a table seats ten, and is booked in one go with one payment. You do not need all ten names up front: add your guests any time until 24 May 2027, and each guest is emailed their own code as you name them.',
     },
     {
       q: 'Can I change my details later?',
@@ -353,7 +352,7 @@ export const CONFERENCE: ConferenceContent = {
     },
     {
       q: 'What does the fee include?',
-      a: 'All keynote speeches, champion insight sessions and contest finals across both days, lunch on both days, and the Saturday gala dinner. Early-bird and group prices are shown in the Tickets section and change on the dates given there.',
+      a: 'All keynote speeches, champion insight sessions and contest finals across both days, lunch on both days, and the Saturday gala dinner. Early-bird prices are shown in the Tickets section and change on the dates given there.',
     },
     {
       q: 'What is the dress code?',
