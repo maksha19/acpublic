@@ -1,20 +1,19 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { ArrowRight, Check, User, Users } from 'lucide-react'
 import { ApiError, createRegistration, getEvent } from '../lib/api'
 import { money, priceLine } from '../lib/format'
-import { EMPTY_PERSON, personSchema, TSHIRT_SIZES, type PersonValues } from '../lib/person'
+import { emptyPerson, personSchema, type PersonValues } from '../lib/person'
+import PersonFields from '../components/PersonFields'
 import { remember } from '../lib/session'
-import { Alert, Button, Card, Field, Input, LinkButton, PageHeader, PriceWindowNote, Select } from '../components/ui'
+import { Alert, Button, Card, Field, Input, LinkButton, PageHeader, PriceWindowNote } from '../components/ui'
 import type { EventInfo } from '../lib/types'
 
-/* Validation lives in lib/person.ts — the same six fields describe the person
-   registering and every guest they name, and the server revalidates all of it
-   either way. */
-const schema = personSchema('your')
-
+/* Validation lives in lib/person.ts — name and email plus whatever fields the
+   committee defined on the event describe the person registering and every
+   guest they name, and the server revalidates all of it either way. */
 type FormValues = PersonValues
 
 export default function Register() {
@@ -30,15 +29,20 @@ export default function Register() {
   )
 
   const tableSeats = event?.tableSeats ?? 10
+  const fields = useMemo(() => event?.fields ?? [], [event])
+  // Rebuilt when the event (and so the field list) arrives; react-hook-form
+  // picks up the new resolver on the next validation.
+  const schema = useMemo(() => personSchema('your', fields), [fields])
 
   const {
     register,
+    control,
     handleSubmit,
     setError,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: EMPTY_PERSON,
+    defaultValues: emptyPerson(),
   })
 
   const mutation = useMutation({
@@ -115,7 +119,7 @@ export default function Register() {
       <Card>
         <form
           onSubmit={handleSubmit((values) =>
-            mutation.mutate({ ...(values as Required<FormValues>), seats }),
+            mutation.mutate({ ...values, seats }),
           )}
           className="space-y-5"
           noValidate
@@ -165,61 +169,7 @@ export default function Register() {
             />
           </Field>
 
-          <Field
-            label="Mobile number"
-            htmlFor="phone"
-            required
-            hint="Used only if we need to reach you about your registration."
-            error={errors.phone?.message}
-          >
-            <Input
-              id="phone"
-              type="tel"
-              inputMode="tel"
-              autoComplete="tel"
-              aria-invalid={!!errors.phone}
-              aria-describedby={errors.phone ? 'phone-error' : 'phone-hint'}
-              {...register('phone')}
-            />
-          </Field>
-
-          <Field
-            label="Club"
-            htmlFor="club"
-            required
-            hint={isTable ? 'Your own club. Each guest can be from a different one.' : undefined}
-            error={errors.club?.message}
-          >
-            <Input
-              id="club"
-              autoComplete="organization"
-              aria-invalid={!!errors.club}
-              aria-describedby={errors.club ? 'club-error' : isTable ? 'club-hint' : undefined}
-              {...register('club')}
-            />
-          </Field>
-
-          <div className="grid gap-5 sm:grid-cols-2">
-            <Field
-              label="Dietary requirements"
-              htmlFor="dietary"
-              hint="Optional — leave blank if none."
-              error={errors.dietary?.message}
-            >
-              <Input id="dietary" aria-describedby="dietary-hint" {...register('dietary')} />
-            </Field>
-
-            <Field label="T-shirt size" htmlFor="tshirt" hint="Optional." error={errors.tshirt?.message}>
-              <Select id="tshirt" aria-describedby="tshirt-hint" {...register('tshirt')}>
-                <option value="">Not sure yet</option>
-                {TSHIRT_SIZES.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </Select>
-            </Field>
-          </div>
+          <PersonFields control={control} fields={fields} />
 
           <div className="border-t border-border pt-5">
             <Button type="submit" disabled={isSubmitting || mutation.isPending} className="w-full sm:w-auto">

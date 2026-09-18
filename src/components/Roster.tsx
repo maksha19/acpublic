@@ -1,14 +1,13 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { CircleDashed, Pencil, UserCheck, UserPlus } from 'lucide-react'
 import { ApiError, updateMember } from '../lib/api'
-import { EMPTY_PERSON, personSchema, TSHIRT_SIZES, type PersonValues } from '../lib/person'
-import { Alert, Button, Card, Field, Input, Select } from './ui'
-import type { Attendee } from '../lib/types'
-
-const schema = personSchema('their')
+import { personSchema, personValues, showValue, type PersonValues } from '../lib/person'
+import PersonFields from './PersonFields'
+import { Alert, Button, Card, Field, Input } from './ui'
+import type { Attendee, PublicField } from '../lib/types'
 
 /**
  * The table owner's roster.
@@ -24,6 +23,7 @@ export default function Roster({
   seats,
   namedSeats,
   members,
+  fields,
   closed,
   cutoffLabel,
   onSaved,
@@ -33,6 +33,8 @@ export default function Roster({
   seats: number
   namedSeats: number
   members: Attendee[]
+  /** The event's registration form fields — what each member is asked. */
+  fields: PublicField[]
   closed: boolean
   cutoffLabel?: string
   onSaved: () => void
@@ -112,7 +114,10 @@ export default function Roster({
                   <p className="ml-6 text-[15px] text-muted-fg tnum">{member.code}</p>
                   {named && (
                     <p className="ml-6 text-[15px] text-muted-fg">
-                      {[member.club, member.email, member.dietary, member.tshirt]
+                      {[
+                        member.email,
+                        ...fields.map((f) => showValue(f, member[f.key])).filter((v) => v !== '—'),
+                      ]
                         .filter(Boolean)
                         .join(' · ')}
                     </p>
@@ -145,6 +150,7 @@ export default function Roster({
                   accessKey={accessKey}
                   member={member}
                   memberNo={n}
+                  fields={fields}
                   onDone={() => {
                     setEditing(null)
                     onSaved()
@@ -165,6 +171,7 @@ function MemberForm({
   accessKey,
   member,
   memberNo,
+  fields,
   onDone,
   onCancel,
 }: {
@@ -172,32 +179,26 @@ function MemberForm({
   accessKey: string
   member: Attendee
   memberNo: number
+  fields: PublicField[]
   onDone: () => void
   onCancel: () => void
 }) {
   const [banner, setBanner] = useState<string | null>(null)
+  const schema = useMemo(() => personSchema('their', fields), [fields])
 
   const {
     register,
+    control,
     handleSubmit,
     setError,
     formState: { errors },
   } = useForm<PersonValues>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      ...EMPTY_PERSON,
-      name: member.name ?? '',
-      email: member.email ?? '',
-      phone: member.phone ?? '',
-      club: member.club ?? '',
-      dietary: member.dietary ?? '',
-      tshirt: (member.tshirt as PersonValues['tshirt']) ?? '',
-    },
+    defaultValues: personValues(fields, member),
   })
 
   const save = useMutation({
-    mutationFn: (values: PersonValues) =>
-      updateMember(code, memberNo, accessKey, values as Required<PersonValues>),
+    mutationFn: (values: PersonValues) => updateMember(code, memberNo, accessKey, values),
     onSuccess: onDone,
     onError: (err) => {
       if (err instanceof ApiError && err.fields) {
@@ -251,50 +252,7 @@ function MemberForm({
         />
       </Field>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Mobile number" htmlFor={id('phone')} required error={errors.phone?.message}>
-          <Input id={id('phone')} type="tel" inputMode="tel" autoComplete="off" {...register('phone')} />
-        </Field>
-        <Field
-          label="Club"
-          htmlFor={id('club')}
-          required
-          hint="Can differ from yours."
-          error={errors.club?.message}
-        >
-          <Input
-            id={id('club')}
-            autoComplete="off"
-            aria-describedby={`${id('club')}-hint`}
-            {...register('club')}
-          />
-        </Field>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field
-          label="Dietary requirements"
-          htmlFor={id('dietary')}
-          hint="Optional."
-          error={errors.dietary?.message}
-        >
-          <Input
-            id={id('dietary')}
-            aria-describedby={`${id('dietary')}-hint`}
-            {...register('dietary')}
-          />
-        </Field>
-        <Field label="T-shirt size" htmlFor={id('tshirt')} hint="Optional." error={errors.tshirt?.message}>
-          <Select id={id('tshirt')} aria-describedby={`${id('tshirt')}-hint`} {...register('tshirt')}>
-            <option value="">Not sure yet</option>
-            {TSHIRT_SIZES.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </Select>
-        </Field>
-      </div>
+      <PersonFields control={control} fields={fields} idPrefix={id('')} />
 
       <div className="flex flex-col gap-3 sm:flex-row">
         <Button type="submit" disabled={save.isPending}>

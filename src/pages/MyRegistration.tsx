@@ -5,6 +5,7 @@ import { QRCodeSVG } from 'qrcode.react'
 import { MailCheck, Printer, Send, Users } from 'lucide-react'
 import { ApiError, getEvent, getRegistration, requestAccessLink } from '../lib/api'
 import { money, priceLine } from '../lib/format'
+import { showValue } from '../lib/person'
 import { recall } from '../lib/session'
 import Roster from '../components/Roster'
 import {
@@ -195,6 +196,7 @@ export default function MyRegistration() {
           seats={seats}
           namedSeats={reg.namedSeats ?? 1}
           members={members.filter((m) => m.status !== 'REPLACED')}
+          fields={event?.fields ?? []}
           closed={isRosterClosed(event?.rosterCutoff)}
           cutoffLabel={event?.rosterCutoffLabel}
           onSaved={() => query.refetch()}
@@ -206,10 +208,9 @@ export default function MyRegistration() {
         <dl className="mt-3">
           <DataRow label="Name" value={reg.name ?? '—'} />
           <DataRow label="Email" value={reg.email ?? '—'} />
-          <DataRow label="Mobile" value={<span className="tnum">{reg.phone ?? '—'}</span>} />
-          <DataRow label="Club" value={reg.club ?? '—'} />
-          <DataRow label="Dietary requirements" value={reg.dietary || '—'} />
-          <DataRow label="T-shirt size" value={reg.tshirt || '—'} />
+          {(event?.fields ?? []).map((f) => (
+            <DataRow key={f.key} label={f.label} value={showValue(f, reg[f.key])} />
+          ))}
         </dl>
         <p className="mt-4 text-[15px] text-muted-fg">
           {isGuest

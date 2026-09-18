@@ -1,4 +1,5 @@
 import type {
+  FieldValue,
   CreateRegistrationResult,
   EventInfo,
   MemberUpdateResult,
@@ -84,19 +85,16 @@ const jsonPut = (body: unknown): RequestInit => ({
 
 export const getEvent = () => request<EventInfo>('/v1/event')
 
-export interface PersonInput {
-  name: string
-  email: string
-  phone: string
-  club: string
-  dietary: string
-  tshirt: string
-}
+/** Name and email, plus whatever fields the committee defined on the event —
+ *  sent flat, as the API stores them. */
+export type PersonInput = { name: string; email: string } & Record<string, FieldValue | number>
 
 /** One booking of `seats` places. `seats` is 1 or the event's table size —
  *  never anything between, and the server checks it against the event rather
  *  than trusting this call. */
-export const createRegistration = (data: PersonInput & { seats: number }) =>
+export type RegistrationInput = PersonInput & { seats: number }
+
+export const createRegistration = (data: RegistrationInput) =>
   request<CreateRegistrationResult>('/v1/registrations', json(data))
 
 export const getRegistration = (code: string, k: string) =>

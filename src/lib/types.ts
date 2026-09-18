@@ -23,6 +23,8 @@ export interface PriceWindow {
 
 export interface EventInfo {
   name: string
+  /** The committee's headline, editable on the admin Event page. */
+  theme?: string
   dateLabel?: string
   /** ISO date of day one (e.g. "2027-05-15"), event-local. Drives the
    *  days-to-go figure — a count, not a clock. */
@@ -67,14 +69,31 @@ export interface EventInfo {
     payNow?: string
     instructions?: string
   }
+  /** The committee-defined registration form fields, in order — everything the
+   *  form asks after name and email. Staff-only flags are not exposed. */
+  fields?: PublicField[]
+}
+
+export type FieldType = 'text' | 'textarea' | 'email' | 'phone' | 'select' | 'boolean'
+export type FieldValue = string | boolean
+
+export interface PublicField {
+  key: string
+  label: string
+  type: FieldType
+  required: boolean
+  options: string[]
 }
 
 /**
- * One person who is coming. The six person fields are optional because a
+ * One person who is coming. The person fields are optional because a
  * reserved-but-unnamed seat on a table genuinely has none of them — they are
  * absent, not blank, and that is the state the whole feature is built around.
+ * Committee-defined fields arrive as further flat keys, read via the index
+ * signature against the event's field definitions.
  */
 export interface Attendee {
+  [key: string]: unknown
   code: string
   /** The booking this attendee belongs to. Equal to `code` for an individual. */
   groupCode?: string

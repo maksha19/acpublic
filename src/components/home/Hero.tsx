@@ -27,7 +27,11 @@ export default function Hero({ event }: { event?: EventInfo }) {
           {/* <span className="block text-2xl font-semibold text-white/90 sm:text-3xl">
             Annual Conference 2027
           </span> */}
-          <span className="mt-1 block font-display text-4xl sm:text-6xl">{CONFERENCE.hero.theme}</span>
+          {/* The committee edits the theme on the admin Event page; the content
+              file is the offline fallback. */}
+          <span className="mt-1 block font-display text-4xl sm:text-6xl">
+            {event?.theme || CONFERENCE.hero.theme}
+          </span>
         </h1>
 
         <p className="mt-4 max-w-2xl text-lg text-white/85">{CONFERENCE.hero.tagline}</p>
