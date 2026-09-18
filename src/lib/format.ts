@@ -7,15 +7,17 @@
 
 export function money(amount: number | undefined | null, currency = 'SGD'): string {
   if (amount === undefined || amount === null) return '—'
-  // Thousands separator matters from the first table booking: "SGD 1080.00"
-  // reads like a typo next to "SGD 1,080.00" on the same screen.
+  // Thousands separator matters from the first table booking: "SGD 1880"
+  // reads like a typo next to "SGD 1,880" on the same screen. No forced
+  // cents: the committee's prices are whole dollars (18 Sep 2026), and
+  // "SGD 188.00" is visual noise. A fee that DOES carry cents still shows them.
   return `${currency} ${Number(amount).toLocaleString('en-SG', {
-    minimumFractionDigits: 2,
+    minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   })}`
 }
 
-/** `10 × SGD 108.00 = SGD 1,080.00`, or just the fee for a single place. */
+/** `10 × SGD 188 = SGD 1,880`, or just the fee for a single place. */
 export function priceLine(
   seats: number,
   unitFee: number | undefined,
@@ -24,6 +26,20 @@ export function priceLine(
 ): string {
   if (seats <= 1) return money(total ?? unitFee, currency)
   return `${seats} × ${money(unitFee, currency)} = ${money(total, currency)}`
+}
+
+/** "7 November 2026", pinned to Singapore so a UTC boundary never shows as
+ *  the day before to a visitor abroad. */
+export function sgDate(iso?: string | null): string | null {
+  if (!iso) return null
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return null
+  return d.toLocaleDateString('en-SG', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'Asia/Singapore',
+  })
 }
 
 export const places = (n: number) => (n === 1 ? '1 place' : `${n} places`)

@@ -1,7 +1,7 @@
 import type { LucideIcon } from 'lucide-react'
 import { Check, User, Users } from 'lucide-react'
 import { CONFERENCE } from '../../content/conference'
-import { money, places } from '../../lib/format'
+import { money, places, sgDate } from '../../lib/format'
 import { Alert, LinkButton, PriceWindowNote, Spinner } from '../ui'
 import { Section } from './Section'
 import type { EventInfo } from '../../lib/types'
@@ -58,14 +58,20 @@ export default function Pricing({
             </Alert>
           )}
 
-          <PriceWindowNote event={event} />
+          {/* The committee wants the early-bird offer stressed — number and
+              time limit — so while it runs it gets a card, not a note. */}
+          {event.priceWindow === 'EARLY_BIRD' ? (
+            <EarlyBirdCallout event={event} />
+          ) : (
+            <PriceWindowNote event={event} />
+          )}
 
           <div className="grid gap-4 sm:grid-cols-2">
             <PriceCard
               Icon={User}
               title="Individual"
               price={money(event.fee, event.currency)}
-              priceNote="one place"
+              priceNote="per pax"
               badge={event.priceWindow === 'EARLY_BIRD' ? 'Early bird' : undefined}
               bullets={CONFERENCE.ticketPerks.individual}
               soldOut={open && !soloOpen}
@@ -77,10 +83,10 @@ export default function Pricing({
               Icon={Users}
               title={`Table of ${tableSeats}`}
               price={money(event.tableFee, event.currency)}
-              priceNote={`${tableSeats} places · ${money(groupFee, event.currency)} per place · one payment`}
+              priceNote={`${tableSeats} pax · ${money(groupFee, event.currency)} per pax · one payment`}
               badge={
                 saving > 0
-                  ? `Group rate — save ${money(saving, event.currency)} per place`
+                  ? `Group rate — save ${money(saving, event.currency)} per pax`
                   : event.priceWindow === 'EARLY_BIRD'
                     ? 'Early bird'
                     : undefined
@@ -100,6 +106,43 @@ export default function Pricing({
         </div>
       )}
     </Section>
+  )
+}
+
+/* Every figure here is the API's: the fee, the window boundaries, the room
+   capacity and the next window's fee. Nothing is hardcoded, so the committee
+   editing the pricing in the admin portal rewrites this paragraph too. */
+function EarlyBirdCallout({ event }: { event: EventInfo }) {
+  const from = sgDate(event.priceWindowStartsUtc)
+  const to = sgDate(event.priceWindowEndsUtc)
+  const next = event.nextPriceWindow
+  const period = from && to ? ` from ${from} to ${to}` : to ? ` until ${to}` : ''
+  return (
+    <div
+      className="rounded-lg border-2 border-accent bg-[#FFF5E6] p-5 sm:p-6"
+      role="region"
+      aria-labelledby="early-bird-heading"
+    >
+      <h3 id="early-bird-heading" className="text-xl text-primary">
+        Grab your Early Bird Ticket now
+      </h3>
+      {event.capacity ? (
+        <p className="mt-2 font-heading text-lg font-bold text-destructive tnum">
+          Limited to the first {event.capacity.toLocaleString('en-SG')} paid registrations.
+        </p>
+      ) : null}
+      <p className="mt-2 text-[16px] tnum">
+        Early Bird Ticket of <strong>{money(event.fee, event.currency)} per pax</strong>
+        {period}.
+        {next && (
+          <>
+            {' '}
+            Full Ticket price of <strong>{money(next.fee, event.currency)} per pax</strong> will apply
+            after that.
+          </>
+        )}
+      </p>
+    </div>
   )
 }
 

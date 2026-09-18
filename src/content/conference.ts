@@ -92,7 +92,18 @@ export interface Testimonial {
 
 export interface FaqItem {
   q: string
-  a: string
+  /** One paragraph, or several rendered in order (steps, caveats). */
+  a: string | string[]
+  /** An in-site pointer rendered after the answer: "#agenda" jumps on this
+   *  page, "/register" is a route. External URLs are deliberately not
+   *  supported here — every FAQ answer should land somewhere on this site. */
+  link?: { label: string; href: string }
+}
+
+/** FAQ is two levels: a category, then its questions. */
+export interface FaqCategory {
+  name: string
+  items: FaqItem[]
 }
 
 export interface ConferenceContent {
@@ -115,7 +126,7 @@ export interface ConferenceContent {
   venue: VenueDetails
   committee: Committee
   testimonials: Testimonial[]
-  faq: FaqItem[]
+  faq: FaqCategory[]
   finalCta: { heading: string; body: string }
 }
 
@@ -142,17 +153,17 @@ export const CONFERENCE: ConferenceContent = {
   /* [REAL] — committee's dates (13 Sep 2026); mirrors ac-infra/scripts/seed.py EVENT. */
   fallbackEvent: { dateLabel: '29–30 May 2027', startsOn: '2027-05-29', city: 'Singapore' },
 
-  /* [REAL] — the committee's theme and event highlights (13 Sep 2026). The
-     tagline is ours, written around them. */
+  /* [REAL] — the committee's theme, tagline and event highlights (13 and
+     18 Sep 2026). */
   hero: {
-    theme: 'Your Story, Your Stage',
-    tagline:
-      'Two days of keynotes, champion insights, the speech contest finals and a gala dinner — with Toastmasters from every corner of Singapore.',
+    theme: 'Your Story, Your Stage.',
+    tagline: 'Two Days of Stories. One Stage. A Lifetime of Inspiration.',
     highlights: ['Keynote Speeches', 'Champion Insights', 'Speech Contest Finals', 'Gala Dinner'],
   },
 
-  /* The four titles are the committee's [REAL] event highlights; the body
-     copy is [MOCK] and the member/club numbers in "Champion insights" are [REAL]. */
+  /* The four titles are the committee's [REAL] event highlights. The speech
+     contest and Gala Night copy is the committee's (18 Sep 2026); the keynote
+     and champion-insights body copy is [MOCK] (the club count is [REAL]). */
   whyAttend: [
     {
       Icon: Mic,
@@ -166,13 +177,13 @@ export const CONFERENCE: ConferenceContent = {
     },
     {
       Icon: Trophy,
-      title: 'Speech contest finals',
-      body: 'The International Speech and Table Topics finals — the best of District 80 on one stage.',
+      title: 'Speech contest',
+      body: 'Exciting District finals for International Speech, Table Topics and Evaluation — the best of District 80 on one stage.',
     },
     {
       Icon: Award,
-      title: 'Gala dinner',
-      body: 'Saturday night: dinner, awards and a year of club achievements, honoured properly.',
+      title: 'Gala Night',
+      body: 'An elegant evening of culinary artistry and celebration, dedicated to honouring our achievements and inspiring a brighter future.',
     },
   ],
 
@@ -199,9 +210,10 @@ export const CONFERENCE: ConferenceContent = {
     // },
   ],
 
-  /* Day labels are [REAL] (29 May 2027 is a Saturday). The four highlight
-     slots are [REAL] programme items; times and everything else are [MOCK] —
-     the printed programme is the committee's call. */
+  /* Day labels are [REAL] (29 May 2027 is a Saturday). Which contests run on
+     which day is [REAL] — it is what the committee's FAQ says (18 Sep 2026) —
+     and the FAQ links here, so keep the two in step. Times and everything
+     else are [MOCK]; the printed programme is the committee's call. */
   agendaDays: [
     {
       label: 'Day 1 — Saturday 29 May',
@@ -211,15 +223,19 @@ export const CONFERENCE: ConferenceContent = {
         { time: '10:15', title: 'Keynote speech', detail: 'Leading Beyond the Lectern' },
         { time: '11:30', title: 'Champion insights', detail: 'Past champions in conversation' },
         { time: '13:00', title: 'Lunch' },
-        { time: '14:30', title: 'International Speech Contest final' },
+        {
+          time: '14:30',
+          title: 'District Table Topics and Evaluation Contests',
+          detail: 'Division L and V International Speech and Evaluation contests run concurrently',
+        },
         { time: '17:00', title: 'Break — check in, dress up' },
-        { time: '19:00', title: 'Gala dinner and awards night' },
+        { time: '19:00', title: 'Gala Night' },
       ],
     },
     {
       label: 'Day 2 — Sunday 30 May',
       items: [
-        { time: '09:00', title: 'Table Topics Contest final' },
+        { time: '09:00', title: 'District International Speech Contest' },
         { time: '11:00', title: 'Keynote speech', detail: 'The Story Only You Can Tell' },
         { time: '12:30', title: 'Lunch' },
         { time: '14:00', title: 'Education sessions' },
@@ -229,31 +245,32 @@ export const CONFERENCE: ConferenceContent = {
     },
   ],
 
-  /* Inclusions are [MOCK]; the table bullets about sitting together and one
+  /* Inclusions are [REAL] — the committee's "What does my ticket cover?" FAQ
+     answer (18 Sep 2026). The table bullets about sitting together and one
      payment are [REAL] system behaviour. */
   ticketPerks: {
     individual: [
-      'Every keynote, workshop and contest final across both days',
-      'Lunch on both days',
-      'Saturday gala dinner',
+      'Opening and closing ceremonies, keynote speech and educational workshops',
+      'District Speech Contests',
+      'Breakfast and lunch on both days, and the Gala Dinner',
     ],
     table: [
-      'Everything in the individual ticket — for all ten places',
+      'Everything in the individual ticket — for all ten pax',
       'Your club sits together',
-      'One payment and one screenshot for the whole table',
+      'One payment and one proof of payment for the whole table',
     ],
   },
 
   /* [REAL] name and address — the committee's venue (13 Sep 2026). name must
-     match seed.py (see header). The MRT and parking lines are [TBC]: the
-     nearest station is right, the walking time and carpark details need
-     confirming with the venue before launch. */
+     match seed.py (see header). MRT and parking are [REAL] from the
+     committee's FAQ (18 Sep 2026); the walking time is ours. */
   venue: {
     name: 'The Istana Ballroom',
-    address: '11 Tanjong Katong Road, Singapore 437157',
+    address: 'Kinex Mall, Level 3, 11 Tanjong Katong Road, Singapore 437157',
     mapsUrl: 'https://maps.google.com/?q=11+Tanjong+Katong+Road+Singapore+437157',
     mrt: 'Paya Lebar (EW8 / CC9) is the nearest station — about a ten-minute walk along Tanjong Katong Road.',
-    parking: 'Parking is available at the venue and nearby — rates to be confirmed.',
+    parking:
+      'Parking is available at Kinex Mall, Levels 4 and 5. There is no complimentary parking coupon — standard mall parking rates apply.',
     notes: [],
   },
 
@@ -323,48 +340,124 @@ export const CONFERENCE: ConferenceContent = {
     },
   ],
 
-  /* Answers 1–6 are [REAL] — they describe how this system actually works.
-     Answers 7–10 are [MOCK/TBC] pending committee decisions. */
+  /* [REAL] — the committee's FAQ (18 Sep 2026), grouped as they grouped it.
+     Three answers carry committee-side caveats and may change:
+       - "How do I pay?"      — bank details were "xxxxx" in the brief; we point
+                                 at the acknowledgement email, which carries the
+                                 live details from the API.
+       - Refunds              — the 31 March 2027 date is "to verify with DFM".
+       - Dress code           — Gala Night dress code is with the Gala chair.
+     The two table questions are ours and describe [REAL] system behaviour. */
   faq: [
     {
-      q: 'How do I pay?',
-      a: 'Register first — your confirmation email carries the bank transfer and PayNow details together with your code. Pay, take a screenshot, and upload it on the payment page. The registration team checks every payment by hand.',
+      name: 'Tickets & Registration',
+      items: [
+        {
+          q: 'How can I register for the conference?',
+          a: [
+            'We have set up an easy 3-step registration process on this website.',
+            'Step 1 — Register. Step 2 — Pay and upload proof of payment. Step 3 — Confirmation.',
+            'You will receive an email notification for each step.',
+          ],
+          link: { label: 'Register now', href: '/register' },
+        },
+        {
+          q: 'How do I pay?',
+          a: 'Please make payment via bank transfer. The bank account details and your unique registration code are in the acknowledgement email you receive on registering — quote the code as your payment reference, then upload your proof of payment on the payment page.',
+        },
+        {
+          q: 'How do I know if my registration is confirmed?',
+          a: 'You will receive an email confirmation upon successful registration with payment.',
+        },
+        {
+          q: 'What does my ticket cover?',
+          a: 'The Full Conference ticket covers the 2-day conference package: the Opening and Closing Ceremonies, Keynote Speech, Educational Workshops, District Speech Contests and Gala Dinner.',
+        },
+        {
+          q: 'Can I get a refund if I am no longer able to attend?',
+          a: 'Full refunds are possible before 31 March 2027. Cancellations made after this date are non-refundable due to venue commitments. However, you can easily transfer your ticket to another Toastmasters member by updating your registration on the portal.',
+          link: { label: 'Manage my registration', href: '/my' },
+        },
+        {
+          q: 'Will I get a physical ticket for entry?',
+          a: 'You will receive a digital confirmation email with a QR code after your payment is confirmed. Please save this email, as our registration desk will scan your QR code on-site.',
+        },
+        {
+          q: 'Can my club book a table?',
+          a: 'Yes — a table seats ten, and is booked in one go with one payment. You do not need all ten names up front: add your guests any time until 24 May 2027, and each guest is emailed their own code as you name them.',
+        },
+        {
+          q: 'Can I change my details later?',
+          a: 'Yes. Your confirmation email has a personal My Registration link — use it to update your dietary needs, t-shirt size and contact details.',
+        },
+      ],
     },
     {
-      q: 'When is my place confirmed?',
-      a: 'As soon as the team verifies your payment, you get a confirmation email. Until then your place is reserved, not confirmed.',
+      name: 'Venue & Logistics',
+      items: [
+        {
+          q: 'Where is the Annual Conference 2027 being held?',
+          a: 'The 2-day conference will be held at The Istana Ballroom, Kinex Mall.',
+          link: { label: 'Venue and directions', href: '#venue' },
+        },
+        {
+          q: 'What is the nearest MRT station?',
+          a: 'The nearest MRT station is Paya Lebar MRT (EW8 / CC9).',
+        },
+        {
+          q: 'Is parking available at Kinex Mall?',
+          a: [
+            'Yes, parking is available at Kinex Mall Levels 4 and 5.',
+            'There is no complimentary parking coupon — standard mall parking rates apply.',
+          ],
+        },
+        {
+          q: 'Is the venue wheelchair accessible?',
+          a: 'Yes, Kinex Mall and The Istana Ballroom are fully wheelchair accessible. The mall features step-free entrances, accessible restrooms, and elevators that provide direct access to the ballroom on Level 3.',
+        },
+        {
+          q: 'What dining options can I look forward to?',
+          a: 'The full conference package includes breakfast, lunch and the Gala Dinner. All meals served are fully Halal-certified by The Istana Ballroom. An Indian Vegetarian menu will be available.',
+        },
+      ],
     },
     {
-      q: 'Can my club book a table?',
-      a: 'Yes — a table seats ten, and is booked in one go with one payment. You do not need all ten names up front: add your guests any time until 24 May 2027, and each guest is emailed their own code as you name them.',
+      name: 'Programme & Events',
+      items: [
+        {
+          q: 'Where can I view the full conference programme?',
+          a: 'The programme is in the Agenda section of this page. Please note that the detailed programme and specific session timings are subject to minor adjustments as the event approaches, to ensure the best possible experience.',
+          link: { label: 'See the agenda', href: '#agenda' },
+        },
+        {
+          q: 'What are the main events happening during the conference?',
+          a: 'Get ready for an inspiring lineup! The conference delivers a powerful keynote presentation, insightful educational workshops, and the highly anticipated District Speech Contests. The crown jewel of the weekend is our glamorous Gala Night on Saturday evening — an unforgettable night of celebration and networking.',
+        },
+        {
+          q: 'What speech contests will be held at the conference?',
+          a: [
+            'The District Table Topics and Evaluation Contests will be held on the Day 1 afternoon, while the District International Speech Contest will be on the Day 2 morning.',
+            'The Division L and V International Speech and Evaluation Contests will be held concurrently on the Day 1 afternoon.',
+          ],
+        },
+        {
+          q: 'Will the educational workshops and keynotes be recorded for later viewing?',
+          a: 'No, the workshops and keynote sessions will not be recorded. The conference is designed as a fully live, interactive and immersive experience for all. We encourage all delegates to join us in person to experience the full impact of each session.',
+        },
+      ],
     },
     {
-      q: 'Can I change my details later?',
-      a: 'Yes. Your confirmation email has a personal My Registration link — use it to update your dietary needs, t-shirt size and contact details.',
-    },
-    {
-      q: 'What is the code in my email?',
-      a: 'Your registration code, for example AC27-0042. Guests on a table get their own codes ending -01 to -09. Quote it whenever you write to the organisers.',
-    },
-    {
-      q: 'What if my table has empty places?',
-      a: 'Unused places are not refunded, but they are not lost either — you can name a guest to an empty place any time before the roster closes on 24 May 2027.',
-    },
-    {
-      q: 'What does the fee include?',
-      a: 'All keynote speeches, champion insight sessions and contest finals across both days, lunch on both days, and the Saturday gala dinner. Early-bird prices are shown in the Tickets section and change on the dates given there.',
-    },
-    {
-      q: 'What is the dress code?',
-      a: 'Business or smart casual for the day programme. The Saturday gala dinner is formal — national dress very welcome.',
-    },
-    {
-      q: 'Can I bring a guest who is not a Toastmaster?',
-      a: 'Yes — friends and family are welcome. Every attendee needs a registered place, member or not.',
-    },
-    {
-      q: 'How do I get there, and can I park?',
-      a: 'The Istana Ballroom is at 11 Tanjong Katong Road, a short walk from Paya Lebar MRT (EW8 / CC9). Driving, parking is available at and around the venue — see the venue section for details.',
+      name: 'General & Other Info',
+      items: [
+        {
+          q: 'Where can I find the most up-to-date details about the event?',
+          a: 'All information related to the Annual Conference 2027 will be available online through this homepage. We recommend bookmarking the page and checking back for the latest updates.',
+        },
+        {
+          q: 'What is the dress code for the conference?',
+          a: 'We appreciate smart casual attire for the annual conference.',
+        },
+      ],
     },
   ],
 

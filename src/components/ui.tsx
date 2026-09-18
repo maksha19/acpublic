@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { AlertTriangle, CheckCircle2, Info, Loader2 } from 'lucide-react'
-import { money } from '../lib/format'
+import { money, sgDate } from '../lib/format'
 import type { EventInfo, RegStatus } from '../lib/types'
 
 /* Hand-built rather than shadcn/ui for Phase 0: the public site needs six
@@ -197,19 +197,17 @@ export function PageHeader({ title, lede }: { title: string; lede?: string }) {
 export function PriceWindowNote({ event }: { event?: EventInfo }) {
   if (!event?.nextPriceWindow) return null
   const next = event.nextPriceWindow
-  const from = next.fromUtc
-  const when = from
-    ? ` on ${new Date(from).toLocaleDateString('en-SG', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Singapore' })}`
-    : ' later'
+  const from = sgDate(next.fromUtc)
+  const when = from ? ` on ${from}` : ' later'
   const group = event.groupFee ?? event.fee
   const nextGroup = next.groupFee ?? next.fee
   const hasGroupRate = Number(group) !== Number(event.fee) || Number(nextGroup) !== Number(next.fee)
   return (
-    <Alert tone="info" title={`Current price: ${money(event.fee, event.currency)} per place`}>
+    <Alert tone="info" title={`Current price: ${money(event.fee, event.currency)} per pax`}>
       {hasGroupRate ? (
         <>
           Book a table and each place is {money(group, event.currency)}. Prices rise{when}: to{' '}
-          {money(next.fee, event.currency)} per place, or {money(nextGroup, event.currency)} on a table.
+          {money(next.fee, event.currency)} per pax, or {money(nextGroup, event.currency)} on a table.
         </>
       ) : (
         <>

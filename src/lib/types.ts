@@ -40,8 +40,11 @@ export interface EventInfo {
   currency: string
   registrationOpen?: boolean
   priceWindow?: string
+  priceWindowStartsUtc?: string
   priceWindowEndsUtc?: string
   nextPriceWindow?: PriceWindow | null
+  /** Total paid places the room holds — the "first N registrations" figure. */
+  capacity?: number
 
   tableSeats?: number
   /** groupFee × tableSeats, also resolved server-side. */

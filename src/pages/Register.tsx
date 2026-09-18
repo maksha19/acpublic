@@ -263,11 +263,11 @@ function BookingChoice({
         Icon={User}
         title="Just me"
         price={money(event?.fee, event?.currency)}
-        priceNote="one place"
+        priceNote="per pax"
         available={soloOpen}
         unavailableNote="Every place has been taken."
         bullets={['Your own seat', 'You pay for yourself', 'Confirmed once we verify your payment']}
-        cta="Register myself"
+        cta="Register"
         onChoose={() => onChoose(1)}
       />
       <Option
@@ -276,7 +276,7 @@ function BookingChoice({
         price={money(event?.tableFee, event?.currency)}
         priceNote={
           event
-            ? `${tableSeats} places · ${money(event.groupFee ?? event.fee, event.currency)} per place · one payment`
+            ? `${tableSeats} places · ${money(event.groupFee ?? event.fee, event.currency)} per pax · one payment`
             : `${tableSeats} places · one payment`
         }
         available={tableOpen}

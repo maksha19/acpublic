@@ -6,7 +6,7 @@ import { InitialsAvatar, Section } from './Section'
    ask should be "people like me loved this", not a schedule. */
 export default function Testimonials() {
   return (
-    <Section id="testimonials" title="What members say" kicker="Heard after past conferences" tint="white">
+    <Section id="testimonials" title="What members say" kicker="Your voices. Your inspiration." tint="white">
       <div className="grid gap-4 md:grid-cols-3">
         {CONFERENCE.testimonials.map((t) => (
           <figure

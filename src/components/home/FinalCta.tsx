@@ -17,7 +17,7 @@ export default function FinalCta({ event }: { event?: EventInfo }) {
         {/* Price only when the API said so — never a hardcoded number. */}
         {event && (
           <p className="mt-4 font-heading text-xl font-bold text-white tnum">
-            {money(event.fee, event.currency)} per place
+            {money(event.fee, event.currency)} per pax
             {event.priceWindow === 'EARLY_BIRD' && (
               <span className="ml-2 font-body text-[15px] font-semibold">— early-bird price</span>
             )}

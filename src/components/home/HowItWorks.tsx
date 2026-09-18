@@ -1,13 +1,25 @@
 import { CreditCard, MailCheck, UserPlus } from 'lucide-react'
 import { Section } from './Section'
 
-/* Moved verbatim from the old Home page. Placed right after Pricing: the
-   moment a price is accepted, the next question is "how painful is this?" —
-   these three steps answer it. The copy is real system behaviour, not mock. */
+/* Placed right after Pricing: the moment a price is accepted, the next
+   question is "how painful is this?" — these three steps answer it. The copy
+   is the committee's (18 Sep 2026) and describes real system behaviour. */
 const STEPS = [
-  { Icon: UserPlus, title: 'Register', body: 'Register yourself, or book a table of ten for your club. You get a code straight away.' },
-  { Icon: CreditCard, title: 'Pay and upload', body: 'Transfer the fee, then upload your payment screenshot on the site. One payment covers a whole table.' },
-  { Icon: MailCheck, title: 'Get confirmed', body: 'The team verifies your payment and emails your confirmation.' },
+  {
+    Icon: UserPlus,
+    title: 'Register',
+    body: 'Upon successful registration, you will receive an email acknowledgement with a unique code and payment instructions.',
+  },
+  {
+    Icon: CreditCard,
+    title: 'Pay and upload proof of payment',
+    body: 'Make payment via bank transfer and upload your proof of payment.',
+  },
+  {
+    Icon: MailCheck,
+    title: 'Confirmation',
+    body: 'You are all set! An email confirmation with your digital ticket will be sent to you.',
+  },
 ]
 
 export default function HowItWorks() {
