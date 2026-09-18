@@ -16,17 +16,17 @@ export default function Hero({ event }: { event?: EventInfo }) {
 
   return (
     <div className="bg-primary text-white">
-      <div className="mx-auto w-full max-w-5xl px-4 py-14 sm:py-20">
-        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-white/75">
+      <div className="mx-auto w-full max-w-5xl px-4 py-14 sm:py-10">
+        {/* <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-white/75">
           Toastmasters {CONFERENCE.district.name} · {city}
-        </p>
+        </p> */}
 
         {/* One h1 for the whole page. Event name and theme are one heading in
             two visual registers — the theme is what posters lead with. */}
-        <h1 className="mt-3 text-white">
-          <span className="block text-2xl font-semibold text-white/90 sm:text-3xl">
+        <h1 className="mt-1 text-white">
+          {/* <span className="block text-2xl font-semibold text-white/90 sm:text-3xl">
             Annual Conference 2027
-          </span>
+          </span> */}
           <span className="mt-1 block font-display text-4xl sm:text-6xl">{CONFERENCE.hero.theme}</span>
         </h1>
 
