@@ -166,13 +166,13 @@ export default function Payment() {
     return (
       <Card>
         <PageHeader title="This link is incomplete" />
-        <Alert tone="warning" title="The personal key is missing">
-          Payment links include a key after the code, like <code>?k=…</code>. Please open the link
-          from your registration email again, copying all of it.
+        <Alert tone="warning" title="We could not open your registration from this link">
+          Please open the payment link from your registration email again. If you no longer have
+          the email, we can send your personal link to the address you registered with.
         </Alert>
         <div className="mt-6">
           <LinkButton to="/my" variant="secondary">
-            Look up my registration
+            Email me my link
           </LinkButton>
         </div>
       </Card>

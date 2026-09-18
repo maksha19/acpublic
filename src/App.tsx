@@ -11,12 +11,15 @@ function NotFound() {
     <Card>
       <PageHeader
         title="Page not found"
-        lede="That link may be incomplete. Registration links in our emails carry both a code and a
-              key — check that the whole link was copied, including everything after the &amp; sign."
+        lede="That link may be incomplete or out of date. Use Check my registration to have a
+              fresh link emailed to you."
       />
-      <LinkButton to="/" variant="secondary">
-        Back to home
-      </LinkButton>
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <LinkButton to="/my">Check my registration</LinkButton>
+        <LinkButton to="/" variant="secondary">
+          Back to home
+        </LinkButton>
+      </div>
     </Card>
   )
 }

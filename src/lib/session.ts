@@ -6,6 +6,10 @@
  * holds it can read that one registration — so it is stored per-browser only and
  * never sent anywhere except as the `k` query parameter the API expects.
  *
+ * Only the register success page writes here. The "Check my registration" form
+ * no longer takes a key at all: it asks for code + registered email and has
+ * the API email the link, so the key is never typed or pasted anywhere.
+ *
  * Phase 1 deletes this file: a magic-link JWT replaces the key, and the token
  * lives in memory with a 24-hour expiry instead of in localStorage.
  */

@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { QRCodeSVG } from 'qrcode.react'
-import { Printer, Search, Users } from 'lucide-react'
-import { getEvent, getRegistration } from '../lib/api'
+import { MailCheck, Printer, Send, Users } from 'lucide-react'
+import { ApiError, getEvent, getRegistration, requestAccessLink } from '../lib/api'
 import { money, priceLine } from '../lib/format'
-import { recall, remember } from '../lib/session'
+import { recall } from '../lib/session'
 import Roster from '../components/Roster'
 import {
   Alert,
@@ -60,9 +60,6 @@ export default function MyRegistration() {
   const code = urlCode || remembered?.code || ''
   const accessKey = urlKey || (remembered?.code === code ? (remembered?.accessKey ?? '') : '')
 
-  const [formCode, setFormCode] = useState(code)
-  const [formKey, setFormKey] = useState(accessKey)
-
   const { data: event } = useQuery({ queryKey: ['event'], queryFn: getEvent })
   const query = useQuery({
     queryKey: ['registration', code, accessKey],
@@ -70,75 +67,22 @@ export default function MyRegistration() {
     enabled: !!code && !!accessKey,
   })
 
-  function lookup(e: React.FormEvent) {
-    e.preventDefault()
-    const c = formCode.trim().toUpperCase()
-    const k = formKey.trim()
-    if (!c || !k) return
-    remember(c, k)
-    setParams({ code: c, k })
-  }
-
-  if (!code || !accessKey) {
-    return (
-      <div className="space-y-6">
-        <PageHeader
-          title="Check my registration"
-          lede="Open the link from your registration email, or enter your code and personal key below."
-        />
-        <Card>
-          <form onSubmit={lookup} className="space-y-5" noValidate>
-            <Field
-              label="Registration code"
-              htmlFor="code"
-              required
-              hint="For example AC27-0042, or AC27-0042-03 if you are a guest on someone's table."
-            >
-              <Input
-                id="code"
-                className="tnum"
-                value={formCode}
-                onChange={(e) => setFormCode(e.target.value)}
-                aria-describedby="code-hint"
-              />
-            </Field>
-            <Field
-              label="Personal key"
-              htmlFor="k"
-              required
-              hint="The part of your email link after &k= — it proves the registration is yours."
-            >
-              <Input
-                id="k"
-                value={formKey}
-                onChange={(e) => setFormKey(e.target.value)}
-                aria-describedby="k-hint"
-              />
-            </Field>
-            <Button type="submit" className="w-full sm:w-auto">
-              <Search className="size-4" aria-hidden="true" />
-              Find my registration
-            </Button>
-          </form>
-        </Card>
-      </div>
-    )
-  }
+  if (!code || !accessKey) return <RequestLink initialCode={code} />
 
   if (query.isLoading) return <Spinner label="Loading your registration" />
 
   if (query.error) {
     return (
       <div className="space-y-6">
-        <PageHeader title="We couldn't find that registration" />
+        <PageHeader title="We couldn't open that registration" />
         <Card>
-          <Alert tone="error" title="No match for that code and key">
-            Check that you copied the whole link from your email, including everything after the
-            <code> &amp;k=</code>. If it still does not work, contact the registration team.
+          <Alert tone="error" title="This link did not work">
+            It may be incomplete or out of date. Request a fresh one below and we will email it
+            to the address you registered with.
           </Alert>
           <div className="mt-6">
             <Button variant="secondary" onClick={() => setParams({})} className="w-full sm:w-auto">
-              Try a different code
+              Request a fresh link
             </Button>
           </div>
         </Card>
@@ -316,6 +260,109 @@ export default function MyRegistration() {
           )}
         </Card>
       )}
+    </div>
+  )
+}
+
+/* The gate when there is no usable link: code + registered email, and the API
+   emails the personal link to the address on file. The key is never typed —
+   the old two-field form had members copying a secret out of an email, and
+   let anyone who saw code + key take over the place. The API answers a
+   mismatch with an explicit "check both" message (the committee's call), and
+   quietly re-uses a link it sent moments ago rather than sending another. */
+function RequestLink({ initialCode }: { initialCode: string }) {
+  const [formCode, setFormCode] = useState(initialCode)
+  const [formEmail, setFormEmail] = useState('')
+
+  const send = useMutation({
+    mutationFn: () => requestAccessLink(formCode.trim().toUpperCase(), formEmail.trim()),
+  })
+  const error = send.error instanceof ApiError ? send.error : undefined
+  // A 422 is a field problem; anything else is about the pair as a whole.
+  const emailError = error?.fields?.email
+  const formError = error && !emailError ? error.message : undefined
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!formCode.trim() || !formEmail.trim() || send.isPending) return
+    send.mutate()
+  }
+
+  if (send.isSuccess) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title="Check your inbox" />
+        <Card>
+          <Alert tone="success" title={`We've emailed your link to ${send.data.to}`}>
+            Open the link in that email to view your registration. If it has not arrived in a
+            few minutes, check your spam folder.
+          </Alert>
+          <div className="mt-6">
+            <Button variant="secondary" onClick={() => send.reset()} className="w-full sm:w-auto">
+              Use a different code or email
+            </Button>
+          </div>
+        </Card>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        title="Check my registration"
+        lede="Open the link from your registration email — or enter your code and the email you registered with, and we will send the link again."
+      />
+      <Card>
+        <form onSubmit={submit} className="space-y-5" noValidate>
+          {formError && (
+            <Alert tone="error" title="We could not send your link">
+              {formError}
+            </Alert>
+          )}
+          <Field
+            label="Registration code"
+            htmlFor="code"
+            required
+            hint="For example AC27-0042, or AC27-0042-03 if you are a guest on someone's table."
+          >
+            <Input
+              id="code"
+              className="tnum"
+              autoComplete="off"
+              value={formCode}
+              onChange={(e) => setFormCode(e.target.value)}
+              aria-describedby="code-hint"
+            />
+          </Field>
+          <Field
+            label="Registered email"
+            htmlFor="email"
+            required
+            hint="The address you registered with — we will email your personal link there."
+            error={emailError}
+          >
+            <Input
+              id="email"
+              type="email"
+              autoComplete="email"
+              inputMode="email"
+              value={formEmail}
+              onChange={(e) => setFormEmail(e.target.value)}
+              aria-invalid={emailError ? true : undefined}
+              aria-describedby={emailError ? 'email-error' : 'email-hint'}
+            />
+          </Field>
+          <Button type="submit" className="w-full sm:w-auto" disabled={send.isPending}>
+            {send.isPending ? (
+              <MailCheck className="size-4 animate-pulse" aria-hidden="true" />
+            ) : (
+              <Send className="size-4" aria-hidden="true" />
+            )}
+            {send.isPending ? 'Sending…' : 'Email me my link'}
+          </Button>
+        </form>
+      </Card>
     </div>
   )
 }

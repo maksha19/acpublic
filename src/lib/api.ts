@@ -104,6 +104,23 @@ export const getRegistration = (code: string, k: string) =>
     `/v1/registrations/${encodeURIComponent(code)}?k=${encodeURIComponent(k)}`,
   )
 
+export interface AccessLinkResult {
+  /** The registered address the link went to — the API's copy, not the form's. */
+  to: string
+  status: 'SENT' | 'FAILED' | string
+  sentAt: string
+  /** A link went out moments ago; nothing new was sent. Same outcome for the member. */
+  throttled?: boolean
+}
+
+/** "Email me my link": code + registered email, never the key. A mismatch is
+ *  a 404 whose message tells the member to check both. */
+export const requestAccessLink = (code: string, email: string) =>
+  request<AccessLinkResult>(
+    `/v1/registrations/${encodeURIComponent(code)}/access-link`,
+    json({ email }),
+  )
+
 /**
  * Name one member of a table. Saved one at a time on purpose: a forty-field
  * form for ten people is abandoned halfway on a phone, and "details at any

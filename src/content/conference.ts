@@ -385,6 +385,11 @@ export const CONFERENCE: ConferenceContent = {
           a: 'You will receive a digital confirmation email with a QR code after your payment is confirmed. Please save this email, as our registration desk will scan your QR code on-site.',
         },
         {
+          q: 'I have lost my registration email. How do I get my link again?',
+          a: 'Go to Check my registration, enter your registration code and the email address you registered with, and we will email your personal link to that address. Or Contact us',
+          link: { label: 'Check my registration', href: '/my' },
+        },
+        {
           q: 'Can my club book a table?',
           a: 'Yes — a table seats ten, and is booked in one go with one payment. You do not need all ten names up front: add your guests any time until 24 May 2027, and each guest is emailed their own code as you name them.',
         },
