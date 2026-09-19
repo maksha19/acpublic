@@ -136,7 +136,18 @@ export default function MyRegistration() {
           <div className="mt-4">
             <Alert tone={needsPayment ? 'warning' : reg.status === 'CONFIRMED' ? 'success' : 'info'}>
               {nextStep}
+              {reg.status === 'CANCELLED' && reg.cancelReason && (
+                <p className="mt-2">
+                  <span className="font-semibold">Reason given:</span> {reg.cancelReason}
+                </p>
+              )}
             </Alert>
+          </div>
+        )}
+
+        {reg.status === 'CANCELLED' && !isGuest && (
+          <div className="mt-5">
+            <LinkButton to="/register">Register again</LinkButton>
           </div>
         )}
 
@@ -165,6 +176,9 @@ export default function MyRegistration() {
                 {reg.code}
               </p>
               <p className="mt-1 text-lg font-semibold">{reg.name}</p>
+              {reg.tableNo && (
+                <p className="mt-1 font-heading text-xl font-bold text-primary">Table {reg.tableNo}</p>
+              )}
               {event?.dateLabel && (
                 <p className="mt-2 text-muted-fg">
                   {event.dateLabel}

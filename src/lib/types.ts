@@ -72,6 +72,8 @@ export interface EventInfo {
   /** The committee-defined registration form fields, in order — everything the
    *  form asks after name and email. Staff-only flags are not exposed. */
   fields?: PublicField[]
+  /** Physical table numbers are being assigned and may appear on tickets. */
+  seatingEnabled?: boolean
 }
 
 export type FieldType = 'text' | 'textarea' | 'email' | 'phone' | 'select' | 'boolean'
@@ -111,6 +113,10 @@ export interface Attendee {
   detailsProvidedAt?: string
   createdAt: string
   updatedAt?: string
+  /** Why the organisers cancelled an unpaid booking — shown to the member. */
+  cancelReason?: string
+  /** Physical table, when the committee has assigned seating. */
+  tableNo?: string
   /** The signed QR payload for the e-ticket. Present only while CONFIRMED,
    *  and only on the row the caller proved a key for. */
   ticket?: string

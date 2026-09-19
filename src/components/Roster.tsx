@@ -115,6 +115,7 @@ export default function Roster({
                   {named && (
                     <p className="ml-6 text-[15px] text-muted-fg">
                       {[
+                        member.tableNo ? `Table ${member.tableNo}` : '',
                         member.email,
                         ...fields.map((f) => showValue(f, member[f.key])).filter((v) => v !== '—'),
                       ]
