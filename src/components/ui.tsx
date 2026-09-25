@@ -111,7 +111,8 @@ export function Field({
 
 const controlClass = `w-full min-h-11 rounded-md border border-border bg-white px-3 py-2
   text-[17px] text-ink placeholder:text-muted-fg
-  focus:border-primary aria-[invalid=true]:border-destructive aria-[invalid=true]:border-2`
+  focus:border-primary aria-[invalid=true]:border-destructive aria-[invalid=true]:border-2
+  disabled:cursor-not-allowed disabled:bg-surface disabled:text-muted-fg`
 
 export function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return <input {...props} className={`${controlClass} ${props.className ?? ''}`} />

@@ -11,9 +11,8 @@ import { CONFERENCE } from '../content/conference'
 
 const navItem = ({ isActive }: { isActive: boolean }) =>
   `inline-flex min-h-11 items-center rounded-md px-3 font-heading text-[15px] font-semibold
-   transition-colors duration-150 ${
-     isActive ? 'bg-white/15 text-white' : 'text-white/85 hover:bg-white/10 hover:text-white'
-   }`
+   transition-colors duration-150 ${isActive ? 'bg-white/15 text-white' : 'text-white/85 hover:bg-white/10 hover:text-white'
+  }`
 
 export default function Layout() {
   return (
@@ -74,8 +73,11 @@ export default function Layout() {
           <div>
             <p className="font-heading font-bold text-primary">Annual Conference 2027</p>
             <p className="mt-1 text-[15px] text-muted-fg">
-              Toastmasters {CONFERENCE.district.name} · {CONFERENCE.fallbackEvent.dateLabel} ·{' '}
-              {CONFERENCE.fallbackEvent.city}
+              Toastmasters {CONFERENCE.district.name}
+              <p>
+                {CONFERENCE.fallbackEvent.dateLabel} ·{' '}
+                {CONFERENCE.fallbackEvent.city}
+              </p>
             </p>
           </div>
           <div>
@@ -111,6 +113,14 @@ export default function Layout() {
               ))}
             </ul>
           </div>
+        </div>
+        <div className="border-t border-border">
+          <p className="mx-auto max-w-5xl px-4 py-4 text-[14px] text-muted-fg">
+            © {new Date().getFullYear()} Toastmasters {CONFERENCE.district.name}. All rights
+            reserved. Toastmasters International and the Toastmasters International logo are
+            trademarks of Toastmasters International. This site is operated by the District{' '}
+            {CONFERENCE.district.name.replace(/^District\s+/i, '')} Annual Conference committee.
+          </p>
         </div>
       </footer>
     </div>

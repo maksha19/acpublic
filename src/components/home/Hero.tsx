@@ -2,11 +2,14 @@ import { CalendarDays, MapPin } from 'lucide-react'
 import { CONFERENCE } from '../../content/conference'
 import { daysUntil } from '../../lib/format'
 import { LinkButton } from '../ui'
+import EarlyBirdCountdown from './EarlyBirdCountdown'
 import type { EventInfo } from '../../lib/types'
 
 /* Renders instantly and completely without the API: the fallbacks mirror the
    seeded event, so the hero never pops in late or sits behind a spinner. The
-   query result, when it lands, silently corrects anything that changed. */
+   query result, when it lands, silently corrects anything that changed. The
+   early-bird countdown is the one API-only part — a price deadline must come
+   from the server or not appear at all. */
 export default function Hero({ event }: { event?: EventInfo }) {
   const fb = CONFERENCE.fallbackEvent
   const dateLabel = event?.dateLabel ?? fb.dateLabel
@@ -69,6 +72,8 @@ export default function Hero({ event }: { event?: EventInfo }) {
             </span>
           )}
         </div>
+
+        <EarlyBirdCountdown event={event} />
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <LinkButton to="/register" variant="inverse">

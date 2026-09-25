@@ -84,10 +84,16 @@ export interface Committee {
   portfolios: Portfolio[]
 }
 
-export interface Testimonial {
-  quote: string
+/** A letter to members, rendered as one piece: optional greeting, paragraphs
+ *  in order, optional sign-off, and the writer's name and designations. */
+export interface MemberMessage {
+  salutation?: string
+  paragraphs: string[]
+  signoff?: string
   name: string
-  club: string
+  title: string
+  /** File name under public/. Without one, the card shows initials. */
+  photo?: string
 }
 
 export interface FaqItem {
@@ -125,7 +131,7 @@ export interface ConferenceContent {
   ticketPerks: { individual: string[]; table: string[] }
   venue: VenueDetails
   committee: Committee
-  testimonials: Testimonial[]
+  memberMessages: MemberMessage[]
   faq: FaqCategory[]
   finalCta: { heading: string; body: string }
 }
@@ -319,26 +325,33 @@ export const CONFERENCE: ConferenceContent = {
     ],
   },
 
-  /* [MOCK] — invented quotes about a past conference. Replace with real,
-     attributed quotes (with permission) or delete the section's data. */
-  testimonials: [
+  /* [REAL] — messages to members (25 Sep 2026), printed as written. */
+  memberMessages: [
     {
-      quote:
-        'I came for the contest final and left with three new mentors. Nothing else in the Toastmasters year puts this many good people in one room.',
-      name: 'Jackie Tan',
-      club: 'Katong Toastmasters',
+      salutation: 'Dear Members and Friends,',
+      paragraphs: [
+        'The Annual Conference is more than an event — it is a stage where voices rise, stories are shared, and growth is celebrated. Your Story, Your Stage reminds us that every journey matters, every voice carries power, and every member contributes to the legacy of our District.',
+        'As I look back on my own path, I see how Toastmasters has given me courage to speak, wisdom to lead, and friendships that last a lifetime. Each speech, each meeting, each challenge has shaped us into stronger communicators and leaders.',
+        'AC2027 is not just about listening — it is about participating, connecting, and inspiring. When you step onto the stage, you do not stand alone. You stand with the support of a community that believes in you, celebrates you, and grows with you.',
+        'Let us embrace this conference as a moment to honor our past, ignite our present, and shape our future. Together, we write the next chapter of our story.',
+      ],
+      signoff: 'With pride and gratitude,',
+      name: 'Poh Kim Siong',
+      title: 'DTM, PID, PRA',
     },
     {
-      quote:
-        'Our club booked a table and it changed our year — we planned the whole club calendar over the gala dinner.',
-      name: 'Firdaus Zainal',
-      club: 'Alexandra Communicators',
-    },
-    {
-      quote:
-        'The workshops alone were worth the fee. I used what I learned in a client pitch the following Tuesday.',
-      name: 'Dinesh Sundaram',
-      club: 'Seletar Speakers',
+      paragraphs: [
+        'What did I learn in my forty plus years in Toastmasters?',
+        'When one joins Toastmasters, one must be ready to serve and drink T.E.A.',
+        'Time – one must allocate time to prepare speeches, volunteer for leader roles in the club and District and have a goal to reach the various awards in the Organisation.',
+        'Enthusiasm – when one is serving the district or making speeches, one must enjoy and be enthusiastic in the respective roles.',
+        'Attitude – if you want your presentation to “wow” the audience, your attitude is of the utmost importance.',
+        'Toastmasters taught me that with Time every speech is a gift when peppered with a tinge of Enthusiasm plus a sprinkling of Attitude for maximum impact.',
+        'It is a gift to inspire, to connect, and to lead.',
+      ],
+      name: 'Augustine Lee',
+      title: 'DTM, PID',
+      photo: 'Picture_Augustine_Lee.jpeg',
     },
   ],
 
@@ -471,6 +484,6 @@ export const CONFERENCE: ConferenceContent = {
   /* [MOCK] heading and body; the live fee shown next to it comes from the API. */
   finalCta: {
     heading: 'Your story. Your stage. Your seat is waiting.',
-    body: 'Join three hundred Toastmasters for two days of keynote speeches, champion insights, the contest finals and the gala dinner — and be in the room when District 80 takes the stage.',
+    body: 'Join three hundred Toastmasters for two days of keynote speeches, champion insights, the contest finals and the gala dinner and be in the room when District 80 takes the stage.',
   },
 }

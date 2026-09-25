@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import { Check, User, Users } from 'lucide-react'
+import { User, Users, DotIcon } from 'lucide-react'
 import { CONFERENCE } from '../../content/conference'
 import { money, places, sgDate } from '../../lib/format'
 import { Alert, LinkButton, PriceWindowNote, Spinner } from '../ui'
@@ -214,7 +214,7 @@ function PriceCard({
       <ul className="mt-4 flex-1 space-y-2">
         {bullets.map((b) => (
           <li key={b} className="flex gap-2 text-[16px]">
-            <Check className="mt-1 size-4 shrink-0 text-success" aria-hidden="true" />
+            <DotIcon className="mt-1 size-4 shrink-0 text-success" aria-hidden="true" />
             <span>{b}</span>
           </li>
         ))}

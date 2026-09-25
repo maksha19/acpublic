@@ -106,6 +106,109 @@
   }
 }
 
+/* Early-bird countdown motion (components/home/EarlyBirdCountdown.tsx). All
+   of it is decorative and all of it stops under prefers-reduced-motion via
+   the global rule below. */
+@keyframes ac-tick {
+  from {
+    transform: translateY(-35%);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes ac-pulse-ring {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  70% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+}
+@keyframes ac-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-8deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(6deg);
+  }
+}
+@keyframes ac-twinkle {
+  0%,
+  100% {
+    transform: scale(0.7) rotate(0deg);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.15) rotate(20deg);
+    opacity: 1;
+  }
+}
+@keyframes ac-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+@keyframes ac-shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@layer components {
+  .ac-tick {
+    animation: ac-tick 0.35s ease-out;
+  }
+  .ac-pulse-ring::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 2px solid var(--color-accent);
+    animation: ac-pulse-ring 1.8s ease-out infinite;
+  }
+  .ac-float {
+    animation: ac-float 2.6s ease-in-out infinite;
+  }
+  .ac-twinkle {
+    animation: ac-twinkle 1.6s ease-in-out infinite;
+  }
+  .ac-blink {
+    animation: ac-blink 1.2s ease-in-out infinite;
+  }
+  /* A gold sheen that travels around the card's edge. The inner card paints
+     over the middle, so only the 2px border shows the gradient. */
+  .ac-shimmer-border {
+    background: linear-gradient(
+      100deg,
+      var(--color-gold) 0%,
+      var(--color-golden-yellow) 20%,
+      #fff3d6 40%,
+      var(--color-gold) 60%,
+      var(--color-golden-yellow) 80%,
+      var(--color-gold) 100%
+    );
+    background-size: 200% 100%;
+    animation: ac-shimmer 3.5s linear infinite;
+  }
+}
+
 /* Anchor jumps on the landing page glide only for people who have not asked
    motion to stop. */
 @media (prefers-reduced-motion: no-preference) {

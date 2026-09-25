@@ -1,5 +1,8 @@
+import { useEffect } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { Outlet, Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
+import { prefetchDirectory } from './lib/directory'
 import Home from './pages/Home'
 import Register from './pages/Register'
 import Payment from './pages/Payment'
@@ -36,6 +39,14 @@ function Contained() {
 }
 
 export default function App() {
+  // The member roster is fetched once, as the site loads, so the club lookup
+  // on the register form answers from memory. A failure here is silent — the
+  // form falls back to a typed club (lib/directory.ts).
+  const queryClient = useQueryClient()
+  useEffect(() => {
+    void prefetchDirectory(queryClient)
+  }, [queryClient])
+
   return (
     <Routes>
       <Route element={<Layout />}>

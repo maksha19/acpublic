@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { ArrowRight, Check, User, Users } from 'lucide-react'
+import { ArrowRight, User, Users, DotIcon } from 'lucide-react'
 import { ApiError, createRegistration, getEvent } from '../lib/api'
 import { money, priceLine } from '../lib/format'
 import { emptyPerson, personSchema, type PersonValues } from '../lib/person'
@@ -287,7 +287,7 @@ function Option({
       <ul className="mt-4 flex-1 space-y-2">
         {bullets.map((b) => (
           <li key={b} className="flex gap-2 text-[16px]">
-            <Check className="mt-1 size-4 shrink-0 text-success" aria-hidden="true" />
+            <DotIcon className="mt-1 size-4 shrink-0 text-success" aria-hidden="true" />
             <span>{b}</span>
           </li>
         ))}
