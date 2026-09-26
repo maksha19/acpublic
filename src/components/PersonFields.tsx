@@ -189,12 +189,20 @@ function DynamicField<T extends FieldValues>({
   }
 
   const text = typeof ctl.value === 'string' ? ctl.value : ''
+  const isMember = isMemberNumberField(field)
   return (
     <Field
       label={field.label}
       htmlFor={id}
       required={field.required}
-      hint={hint ?? (field.required ? undefined : 'Optional.')}
+      hint={
+        hint ??
+        (isMember ? (
+          <MemberIdHint optional={!field.required} />
+        ) : field.required ? undefined : (
+          'Optional.'
+        ))
+      }
       error={message}
     >
       {field.type === 'select' ? (
@@ -227,6 +235,7 @@ function DynamicField<T extends FieldValues>({
           inputMode={field.type === 'phone' ? 'tel' : field.type === 'email' ? 'email' : undefined}
           autoComplete={field.type === 'phone' ? 'tel' : field.type === 'email' ? 'email' : 'off'}
           maxLength={200}
+          placeholder={isMember ? 'PN-61234567' : undefined}
           value={text}
           disabled={disabled}
           onChange={(e) => ctl.onChange(e.target.value)}
@@ -236,6 +245,26 @@ function DynamicField<T extends FieldValues>({
         />
       )}
     </Field>
+  )
+}
+
+/** Where to find the member ID and what it looks like. Committee wording. */
+function MemberIdHint({ optional }: { optional: boolean }) {
+  return (
+    <>
+      Format: PN-XXXXXXXX (8 digits), e.g. PN-61234567, PN-00054321.{optional && ' Optional.'}
+      <br />
+      You may find your Member ID at{' '}
+      <a
+        href="https://www.toastmasters.org/myhome/profile"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-primary underline underline-offset-2"
+      >
+        toastmasters.org/myhome/profile
+      </a>
+      , under &lsquo;Personal Details&rsquo;.
+    </>
   )
 }
 

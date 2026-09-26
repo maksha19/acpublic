@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { isMemberNumberField } from './directory'
 import type { FieldValue, PublicField } from './types'
 
 /**
@@ -15,6 +16,12 @@ export type PersonValues = { name: string; email: string } & Record<string, Fiel
 
 const EMAIL_RE = /^[^@\s]+@[^@\s.]+(\.[^@\s.]+)+$/
 const PHONE_RE = /^\+?[0-9][0-9\s\-()]{6,19}$/
+
+/** A Toastmasters member ID as it appears on toastmasters.org: PN- and eight
+ *  digits. Case-insensitive here; the server stores it upper-case. Mirrors
+ *  MEMBER_ID_RE in fields.py. */
+export const MEMBER_ID_RE = /^PN-\d{8}$/i
+export const MEMBER_ID_ERROR = 'Enter your member ID as PN- followed by 8 digits, e.g. PN-61234567.'
 
 /** A dropdown option called "Other"/"Others" invites a free-text answer: the
  *  form shows a "please specify" box and the typed text is the value. Mirrors
@@ -48,6 +55,9 @@ function rule(field: PublicField): z.ZodTypeAny {
         `Choose one of the ${label} options.`,
       )
     default:
+      if (isMemberNumberField(field)) {
+        return required.refine((v) => v === '' || MEMBER_ID_RE.test(v), MEMBER_ID_ERROR)
+      }
       return required
   }
 }

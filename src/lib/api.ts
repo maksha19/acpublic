@@ -168,7 +168,25 @@ export async function uploadToS3(presigned: PresignedUpload, file: File): Promis
   for (const [name, value] of Object.entries(presigned.fields)) form.append(name, value)
   form.append('file', file)
 
-  const res = await fetch(presigned.url, { method: 'POST', body: form })
+  // A phone on mobile data drops connections mid-upload; Safari reports that as
+  // a bare "Load failed" TypeError with no response. The presigned POST is
+  // safe to repeat (same key, same policy), so try twice before giving up,
+  // and say what happened in words the member can act on.
+  let res: Response | undefined
+  for (let attempt = 0; attempt < 2 && !res; attempt++) {
+    try {
+      res = await fetch(presigned.url, { method: 'POST', body: form })
+    } catch {
+      if (attempt === 1) {
+        throw new ApiError(
+          0,
+          'NETWORK',
+          'The screenshot upload did not complete. Check your connection and press Submit again.',
+        )
+      }
+    }
+  }
+  if (!res) return
   if (!res.ok) {
     // S3 replies in XML. Pull out the message so a size or type rejection is
     // readable instead of "Upload failed (403)".

@@ -332,7 +332,7 @@ function Registered({
     <div className="space-y-6">
       <PageHeader
         title={
-          isTable ? `Your table of ${seats} is reserved — one step to go` : "You're registered — one step to go"
+          isTable ? `Your table of ${seats} is reserved — one more step to go` : "You're registered — one more step to go"
         }
       />
       <Card>

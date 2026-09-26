@@ -28,6 +28,14 @@ import {
    S3 presigned policy enforces both server-side; checking here just means the
    member finds out before a 4 MB upload instead of after. */
 const MAX_BYTES = 5 * 1024 * 1024
+
+/** Today as YYYY-MM-DD in the member's own timezone — the same calendar the
+ *  date picker works in, so "today" is always selectable. */
+function todayIso(): string {
+  const d = new Date()
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+}
 const ACCEPTED = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf']
 
 const schema = z.object({
@@ -37,7 +45,12 @@ const schema = z.object({
     .min(3, 'Enter the transaction reference from your bank.')
     .max(40)
     .regex(/^[A-Za-z0-9\-_/ ]+$/, 'Use letters, numbers, spaces, - _ / only.'),
-  paidOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Choose the date you paid.'),
+  paidOn: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Choose the date you paid.')
+    // A payment cannot have happened tomorrow. Compared as local calendar
+    // dates, which is what the date picker gives us.
+    .refine((v) => v <= todayIso(), 'The date paid cannot be in the future.'),
   amount: z
     .string()
     .trim()
@@ -469,6 +482,7 @@ export default function Payment() {
               <Input
                 id="paidOn"
                 type="date"
+                max={todayIso()}
                 aria-invalid={!!errors.paidOn}
                 aria-describedby={errors.paidOn ? 'paidOn-error' : undefined}
                 {...register('paidOn')}
