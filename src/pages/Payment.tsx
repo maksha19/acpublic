@@ -4,10 +4,12 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
-import { CheckCircle2, Upload } from 'lucide-react'
+import { QRCodeSVG } from 'qrcode.react'
+import { Building2, CheckCircle2, QrCode, Upload } from 'lucide-react'
 import { ApiError, createProofUrl, getEvent, getRegistration, submitPayment, uploadToS3 } from '../lib/api'
 import { money, priceLine } from '../lib/format'
 import { recall } from '../lib/session'
+import { getPaynowQRCode } from '../lib/sgQRCode'
 import {
   Alert,
   Button,
@@ -40,10 +42,23 @@ const schema = z.object({
     .string()
     .trim()
     .regex(/^\d{1,6}(\.\d{1,2})?$/, 'Enter an amount, e.g. 120.00'),
-  method: z.enum(['BANK_TRANSFER', 'PAYNOW', 'CARD', 'OTHER']),
+  method: z.enum(['BANK_TRANSFER', 'PAYNOW']),
 })
 
 type FormValues = z.infer<typeof schema>
+
+/** The two ways the committee accepts money. Chosen in Step 1; Step 2's "How
+ *  you paid" follows the choice so the member is not asked twice. */
+type PayOption = 'BANK_TRANSFER' | 'PAYNOW'
+
+/** The admin types a UEN or a mobile number into one box. A Singapore mobile
+ *  is eight digits starting 8 or 9, with or without +65; anything else is
+ *  treated as a UEN. */
+function paynowTarget(raw: string): { uen?: string; phone?: string } {
+  const compact = raw.replace(/[\s-]/g, '')
+  const m = /^(?:\+?65)?([89]\d{7})$/.exec(compact)
+  return m ? { phone: `+65${m[1]}` } : { uen: compact.toUpperCase() }
+}
 
 type Stage = 'idle' | 'preparing' | 'uploading' | 'saving' | 'done'
 
@@ -74,17 +89,31 @@ export default function Payment() {
   const [fileError, setFileError] = useState<string | null>(null)
   const [stage, setStage] = useState<Stage>('idle')
   const [submitError, setSubmitError] = useState<string | null>(null)
+  // null until the event arrives: PayNow is the default when the committee
+  // has set one up, otherwise bank transfer is the only option.
+  const [option, setOption] = useState<PayOption | null>(null)
 
   const {
     register,
     handleSubmit,
     reset,
     setError,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { reference: '', paidOn: '', amount: '', method: 'BANK_TRANSFER' },
   })
+
+  const pay = event?.payment
+  const hasPayNow = !!pay?.payNow
+  const hasBank = !!(pay?.accountNumber || pay?.bankName)
+  const chosen: PayOption = option ?? (hasPayNow ? 'PAYNOW' : 'BANK_TRANSFER')
+
+  // Step 1's choice is Step 2's answer to "How you paid".
+  useEffect(() => {
+    setValue('method', chosen)
+  }, [chosen, setValue])
 
   /* What this booking owes: the amount frozen when it was made, NOT the event's
      current fee. A table booked during early bird still owes the early-bird
@@ -99,6 +128,32 @@ export default function Payment() {
       reset((v) => ({ ...v, amount: Number(expectedAmount).toFixed(2) }), { keepDirtyValues: true })
     }
   }, [expectedAmount, reset])
+
+  // The registration code IS the payment reference — it is what the PayNow QR
+  // carries and what the bank-transfer instructions ask for — so it is the
+  // transaction reference too, unless the member types over it.
+  const regCode = regQuery.data?.registration.code
+  useEffect(() => {
+    if (regCode) reset((v) => ({ ...v, reference: regCode }), { keepDirtyValues: true })
+  }, [regCode, reset])
+
+  // The PayNow payload: this booking's frozen amount, not editable in the
+  // banking app, referenced by the registration code. Built only when the
+  // committee has a PayNow target; a malformed one falls back to the text.
+  const paynowPayload = useMemo(() => {
+    if (!pay?.payNow || !regCode || expectedAmount === undefined) return null
+    try {
+      return getPaynowQRCode({
+        ...paynowTarget(pay.payNow),
+        amount: Number(expectedAmount),
+        amountEditable: '0',
+        referenceNumber: regCode,
+        merchantName: (pay.accountName || 'District 80').slice(0, 25),
+      })
+    } catch {
+      return null
+    }
+  }, [pay?.payNow, pay?.accountName, regCode, expectedAmount])
 
   const previewUrl = useMemo(
     () => (file && file.type.startsWith('image/') ? URL.createObjectURL(file) : null),
@@ -244,9 +299,47 @@ export default function Payment() {
   }
 
   const busy = stage !== 'idle'
-  const pay = event?.payment
   const seats = reg.seats ?? 1
   const isTable = seats > 1
+
+  const amountRow = (
+    <DataRow
+      label="Amount to pay"
+      value={
+        <span className="tnum">
+          {money(expectedAmount, event?.currency)}
+          {isTable && (
+            <span className="ml-2 block font-normal text-muted-fg sm:inline">
+              {priceLine(seats, reg.unitFee, expectedAmount, event?.currency)}
+            </span>
+          )}
+        </span>
+      }
+    />
+  )
+
+  const optionTab = (value: PayOption, Icon: typeof QrCode, label: string) => {
+    const active = chosen === value
+    return (
+      <button
+        type="button"
+        role="tab"
+        aria-selected={active}
+        aria-controls={`pay-${value}`}
+        id={`tab-${value}`}
+        onClick={() => setOption(value)}
+        className={`inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-md px-4
+                    font-heading font-semibold transition-colors duration-150 ${
+                      active
+                        ? 'bg-primary text-white'
+                        : 'bg-white text-primary hover:bg-surface'
+                    }`}
+      >
+        <Icon className="size-5" aria-hidden="true" />
+        {label}
+      </button>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -276,29 +369,69 @@ export default function Payment() {
       {pay && (
         <Card>
           <h2 className="text-xl">Step 1 — Pay the fee</h2>
-          <dl className="mt-3">
-            {pay.bankName && <DataRow label="Bank" value={pay.bankName} />}
-            {pay.accountName && <DataRow label="Account name" value={pay.accountName} />}
-            {pay.accountNumber && (
-              <DataRow label="Account number" value={<span className="tnum">{pay.accountNumber}</span>} />
-            )}
-            {pay.payNow && <DataRow label="PayNow" value={<span className="tnum">{pay.payNow}</span>} />}
-            <DataRow
-              label="Amount to transfer"
-              value={
-                <span className="tnum">
-                  {money(expectedAmount, event?.currency)}
-                  {isTable && (
-                    <span className="ml-2 block font-normal text-muted-fg sm:inline">
-                      {priceLine(seats, reg.unitFee, expectedAmount, event?.currency)}
-                    </span>
-                  )}
-                </span>
-              }
-            />
-            <DataRow label="Payment reference" value={<span className="tnum">{reg.code}</span>} />
-          </dl>
-          {pay.instructions && <p className="mt-3 text-[16px] text-muted-fg">{pay.instructions}</p>}
+
+          {/* Two ways to pay, one visible at a time. Both tabs show only when
+              the committee has set both up; otherwise the one that exists. */}
+          {hasPayNow && hasBank && (
+            <div
+              role="tablist"
+              aria-label="How would you like to pay?"
+              className="mt-4 flex gap-1 rounded-lg border border-border bg-surface p-1"
+            >
+              {optionTab('PAYNOW', QrCode, 'PayNow')}
+              {optionTab('BANK_TRANSFER', Building2, 'Bank transfer')}
+            </div>
+          )}
+
+          {chosen === 'PAYNOW' && hasPayNow ? (
+            <div
+              id="pay-PAYNOW"
+              role="tabpanel"
+              aria-labelledby="tab-PAYNOW"
+              className="mt-4 grid gap-5 sm:grid-cols-[auto_1fr] sm:items-start"
+            >
+              {paynowPayload ? (
+                <figure className="flex flex-col items-center mx-auto w-fit rounded-lg border border-border bg-white p-4">
+                  <QRCodeSVG value={paynowPayload} size={208} marginSize={0} level="M" />
+                  <figcaption className="mt-3 text-center text-[15px] text-muted-fg">
+                    Scan with any Singapore banking app
+                  </figcaption>
+                </figure>
+              ) : (
+                <Alert tone="warning" title="QR code unavailable">
+                  Pay with PayNow to the details on the right.
+                </Alert>
+              )}
+              <div>
+                <dl>
+                  <DataRow label="PayNow" value={<span className="tnum">{pay.payNow}</span>} />
+                  {pay.accountName && <DataRow label="Pays to" value={pay.accountName} />}
+                  {amountRow}
+                  <DataRow label="Reference" value={<span className="tnum">{reg.code}</span>} />
+                </dl>
+                <p className="mt-3 text-[16px] text-muted-fg">
+                  The amount and reference are already in the code — the app will not let you
+                  change them. Take a screenshot of the confirmation for Step 2.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div id="pay-BANK_TRANSFER" role="tabpanel" aria-labelledby="tab-BANK_TRANSFER" className="mt-2">
+              <dl>
+                {pay.bankName && <DataRow label="Bank" value={pay.bankName} />}
+                {pay.accountName && <DataRow label="Account name" value={pay.accountName} />}
+                {pay.accountNumber && (
+                  <DataRow label="Account number" value={<span className="tnum">{pay.accountNumber}</span>} />
+                )}
+                {!hasBank && pay.payNow && (
+                  <DataRow label="PayNow" value={<span className="tnum">{pay.payNow}</span>} />
+                )}
+                {amountRow}
+                <DataRow label="Payment reference" value={<span className="tnum">{reg.code}</span>} />
+              </dl>
+              {pay.instructions && <p className="mt-3 text-[16px] text-muted-fg">{pay.instructions}</p>}
+            </div>
+          )}
         </Card>
       )}
 
@@ -315,7 +448,11 @@ export default function Payment() {
             label="Transaction reference"
             htmlFor="reference"
             required
-            hint="From your bank app — the reference or transaction number for this transfer."
+            hint={
+              chosen === 'PAYNOW'
+                ? 'Your registration code, as carried in the QR code. Replace it with the transaction number from your banking app if you prefer.'
+                : 'Your registration code is filled in. Replace it with the transaction number from your bank if you have one.'
+            }
             error={errors.reference?.message}
           >
             <Input
@@ -359,8 +496,6 @@ export default function Payment() {
             <Select id="method" {...register('method')}>
               <option value="BANK_TRANSFER">Bank transfer</option>
               <option value="PAYNOW">PayNow</option>
-              <option value="CARD">Card</option>
-              <option value="OTHER">Other</option>
             </Select>
           </Field>
 
