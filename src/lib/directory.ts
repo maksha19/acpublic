@@ -21,7 +21,9 @@ export const DIRECTORY_CSV_URL =
 
 export interface DirectoryEntry {
   memberId: string
-  club: string
+  /** Every club the member belongs to, in sheet order, no repeats. Usually one;
+   *  a dual member gets a dropdown on the form. */
+  clubs: string[]
   name: string
 }
 
@@ -29,8 +31,9 @@ export type Directory = Map<string, DirectoryEntry>
 
 export const DIRECTORY_QUERY_KEY = ['member-directory'] as const
 
-/** Digits only, so "0123 456" and "123456" and a pasted "ID: 123456" agree. */
-export const normalizeMemberId = (raw: string) => raw.replace(/\D/g, '')
+/** Digits only, leading zeros dropped, so "PN-07127569", "07127569" and the
+ *  sheet's "7127569" (Sheets strips the zero from a numeric cell) all agree. */
+export const normalizeMemberId = (raw: string) => raw.replace(/\D/g, '').replace(/^0+/, '')
 
 /* Which committee-defined fields play the two roles. Matched by key first
    (what the seed and admin editor write) and by label as a fallback, so a
@@ -97,8 +100,10 @@ export function buildDirectory(csv: string): Directory {
       .map((s) => (s ?? '').trim())
       .filter(Boolean)
       .join(' ')
-    // First occurrence wins; a member listed under two clubs keeps the first.
-    if (!dir.has(memberId)) dir.set(memberId, { memberId, club, name })
+    // A member listed under two clubs gets both — the form lets them pick.
+    const existing = dir.get(memberId)
+    if (!existing) dir.set(memberId, { memberId, clubs: [club], name })
+    else if (!existing.clubs.includes(club)) existing.clubs.push(club)
   }
   return dir
 }

@@ -60,7 +60,10 @@ export default function PersonFields<T extends FieldValues>({
 
 /* ------------------------------------------------------ club from roster ---- */
 
-type LookupStatus = 'blank' | 'checking' | 'found' | 'missing'
+/** `found` — one club, filled in and locked. `choose` — the member is in more
+ *  than one club, so the box becomes a dropdown of just those. `missing` — not
+ *  in the roster, type it. */
+type LookupStatus = 'blank' | 'checking' | 'found' | 'choose' | 'missing'
 
 /** Half a second after the last keystroke, not on every one: member IDs are
  *  seven or eight digits and a lookup per digit flickers the hint. */
@@ -83,17 +86,22 @@ function ClubFromRoster<T extends FieldValues>({
   const { field: club } = useController({ control, name: field.key as Path<T> })
 
   const [status, setStatus] = useState<LookupStatus>(memberNumber ? 'checking' : 'blank')
+  const [clubs, setClubs] = useState<string[]>([])
   // Whether the CURRENT club value came from the roster. Only a value we put
   // there is ever cleared by us; something the member typed is theirs.
   const autoFilled = useRef(false)
 
   useEffect(() => {
-    if (!memberNumber) {
-      setStatus('blank')
+    const clear = () => {
       if (autoFilled.current) {
         club.onChange('' as PathValue<T, Path<T>>)
         autoFilled.current = false
       }
+    }
+    if (!memberNumber) {
+      setStatus('blank')
+      setClubs([])
+      clear()
       return
     }
     if (loadingDirectory) {
@@ -102,20 +110,28 @@ function ClubFromRoster<T extends FieldValues>({
     }
     const timer = setTimeout(() => {
       const entry = lookupMember(directory, memberNumber)
-      if (entry) {
-        club.onChange(entry.club as PathValue<T, Path<T>>)
+      if (!entry) {
+        setClubs([])
+        clear()
+        setStatus('missing')
+      } else if (entry.clubs.length === 1) {
+        setClubs(entry.clubs)
+        club.onChange(entry.clubs[0] as PathValue<T, Path<T>>)
         autoFilled.current = true
         setStatus('found')
       } else {
-        if (autoFilled.current) {
+        // Dual member: offer their clubs, keep a choice already made if it is
+        // still one of them, otherwise leave it for them to pick.
+        setClubs(entry.clubs)
+        if (!entry.clubs.includes(String(club.value ?? ''))) {
           club.onChange('' as PathValue<T, Path<T>>)
-          autoFilled.current = false
+          autoFilled.current = true
         }
-        setStatus('missing')
+        setStatus('choose')
       }
     }, LOOKUP_DEBOUNCE_MS)
     return () => clearTimeout(timer)
-    // club.onChange is stable for the life of the controller.
+    // club.onChange / club.value are read at fire time; the controller is stable.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [memberNumber, directory, loadingDirectory])
 
@@ -128,15 +144,26 @@ function ClubFromRoster<T extends FieldValues>({
   const hint =
     status === 'found'
       ? 'Filled in from the District member roster.'
-      : status === 'checking'
-        ? 'Looking up your club…'
-        : status === 'missing'
-          ? 'That member number is not in the roster — type your club here.'
-          : memberField.required
-            ? `Enter your ${memberField.label.toLowerCase()} above and we will fill this in.`
-            : `Filled in from your ${memberField.label.toLowerCase()}, or type it here.`
+      : status === 'choose'
+        ? `The roster lists you in ${clubs.length} clubs — choose the one to show on your badge.`
+        : status === 'checking'
+          ? 'Looking up your club…'
+          : status === 'missing'
+            ? 'That member number is not in the roster — type your club here.'
+            : memberField.required
+              ? `Enter your ${memberField.label.toLowerCase()} above and we will fill this in.`
+              : `Filled in from your ${memberField.label.toLowerCase()}, or type it here.`
 
-  return <DynamicField control={control} field={field} id={id} disabled={locked} hint={hint} />
+  return (
+    <DynamicField
+      control={control}
+      field={field}
+      id={id}
+      disabled={locked}
+      hint={hint}
+      choices={status === 'choose' ? clubs : undefined}
+    />
+  )
 }
 
 /* ------------------------------------------------------------ one field ---- */
@@ -147,12 +174,16 @@ function DynamicField<T extends FieldValues>({
   id,
   disabled = false,
   hint,
+  choices,
 }: {
   control: Control<T>
   field: PublicField
   id: string
   disabled?: boolean
   hint?: string
+  /** Render a text field as a dropdown of exactly these values — the club
+   *  box when the roster lists the member in more than one club. */
+  choices?: string[]
 }) {
   const {
     field: ctl,
@@ -205,7 +236,23 @@ function DynamicField<T extends FieldValues>({
       }
       error={message}
     >
-      {field.type === 'select' ? (
+      {choices ? (
+        <Select
+          id={id}
+          value={choices.includes(text) ? text : ''}
+          onChange={(e) => ctl.onChange(e.target.value)}
+          onBlur={ctl.onBlur}
+          aria-invalid={!!message}
+          aria-describedby={describedBy}
+        >
+          <option value="">Choose your club…</option>
+          {choices.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </Select>
+      ) : field.type === 'select' ? (
         <SelectWithOther
           id={id}
           options={field.options}
@@ -232,7 +279,7 @@ function DynamicField<T extends FieldValues>({
         <Input
           id={id}
           type={field.type === 'email' ? 'email' : field.type === 'phone' ? 'tel' : 'text'}
-          inputMode={field.type === 'phone' ? 'tel' : field.type === 'email' ? 'email' : undefined}
+          inputMode={field.type === 'phone' ? 'numeric' : field.type === 'email' ? 'email' : undefined}
           autoComplete={field.type === 'phone' ? 'tel' : field.type === 'email' ? 'email' : 'off'}
           maxLength={200}
           placeholder={isMember ? 'PN-61234567' : undefined}
@@ -252,7 +299,8 @@ function DynamicField<T extends FieldValues>({
 function MemberIdHint({ optional }: { optional: boolean }) {
   return (
     <>
-      Format: PN-XXXXXXXX (8 digits), e.g. PN-61234567, PN-00054321.{optional && ' Optional.'}
+      Format: PN- followed by your member number (6 to 8 digits), e.g. PN-61234567, PN-00054321.
+      {optional && ' Optional.'}
       <br />
       You may find your Member ID at{' '}
       <a

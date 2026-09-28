@@ -15,13 +15,15 @@ import type { FieldValue, PublicField } from './types'
 export type PersonValues = { name: string; email: string } & Record<string, FieldValue>
 
 const EMAIL_RE = /^[^@\s]+@[^@\s.]+(\.[^@\s.]+)+$/
-const PHONE_RE = /^\+?[0-9][0-9\s\-()]{6,19}$/
+/** Digits only — no +, spaces or dashes. Mirrors PHONE_RE in fields.py. */
+const PHONE_RE = /^[0-9]{7,15}$/
 
-/** A Toastmasters member ID as it appears on toastmasters.org: PN- and eight
- *  digits. Case-insensitive here; the server stores it upper-case. Mirrors
+/** A Toastmasters member ID as it appears on toastmasters.org: PN- and the
+ *  member's digits — eight for recent members, six or seven for older ones.
+ *  Case-insensitive here; the server stores it upper-case. Mirrors
  *  MEMBER_ID_RE in fields.py. */
-export const MEMBER_ID_RE = /^PN-\d{8}$/i
-export const MEMBER_ID_ERROR = 'Enter your member ID as PN- followed by 8 digits, e.g. PN-61234567.'
+export const MEMBER_ID_RE = /^PN-\d{6,8}$/i
+export const MEMBER_ID_ERROR = 'Enter your member ID as PN- followed by 6 to 8 digits, e.g. PN-61234567.'
 
 /** A dropdown option called "Other"/"Others" invites a free-text answer: the
  *  form shows a "please specify" box and the typed text is the value. Mirrors
@@ -46,7 +48,7 @@ function rule(field: PublicField): z.ZodTypeAny {
     case 'phone':
       return required.refine(
         (v) => v === '' || PHONE_RE.test(v),
-        'Enter a valid phone number, e.g. +65 8123 4567.',
+        'Enter digits only, no spaces or +, e.g. 81234567.',
       )
     case 'select':
       if (otherOption(field.options)) return required
