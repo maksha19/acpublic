@@ -9,12 +9,23 @@
 // wrangler.json, then wrangler.toml, and having more than one is a footgun —
 // you edit the .toml, Wrangler reads the .jsonc, and nothing changes. JSONC is
 // Cloudflare's current default and is the one to keep.
+//
+// Two environments, two branches, two Workers (since 29 Sep 2026):
+//
+//   branch   Worker        domain                            API
+//   master   acpublic      https://devpublic.district80ac.com  api-dev.district80ac.com
+//   prd      prd-acpublic  https://district80ac.com            api.district80ac.com
+//
+// Each Worker's Workers Builds setting watches its own branch. The ONLY files
+// that differ between the branches are this "name" and .env.production; a
+// release is `git checkout prd && git merge master`, keeping prd's version of
+// both on conflict.
 {
-  // MUST match the Worker that public.district80ac.com is bound to. A mismatch
-  // does not fail the build: Workers Builds cheerfully creates a *second*
-  // Worker under the new name, deploys to that, and leaves the custom domain
-  // pointing at the old one — so the site keeps serving the previous build
-  // while the deploy log says success.
+  // MUST match the Worker that the domain above is bound to. A mismatch does
+  // not fail the build: Workers Builds cheerfully creates a *second* Worker
+  // under the new name, deploys to that, and leaves the custom domain pointing
+  // at the old one — so the site keeps serving the previous build while the
+  // deploy log says success.
   "name": "acpublic",
 
   // No "main" field: this is an assets-only Worker. There is no server-side
