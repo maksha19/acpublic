@@ -15,7 +15,7 @@
   // Worker under the new name, deploys to that, and leaves the custom domain
   // pointing at the old one — so the site keeps serving the previous build
   // while the deploy log says success.
-  "name": "acpublic",
+  "name": "prd-acpublic",
 
   // No "main" field: this is an assets-only Worker. There is no server-side
   // code, just the Vite build output. The API lives separately in ../ac-infra
