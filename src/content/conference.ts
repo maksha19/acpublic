@@ -228,9 +228,9 @@ export const CONFERENCE: ConferenceContent = {
         { time: '09:30 AM', title: 'Opening Ceremony' },
         { time: '10:30 AM', title: 'Keynote Speech and Workshop' },
         { time: '12:00 PM', title: 'Lunch Break',},
-        { time: '02:00 PM', 
+        { time: '02:00 PM',
           title: 'Concurrent Programme',
-          detail: '<p className="font-bold !text-black">English Track : </p>  \n <ul className="!list-disc !list-inside"><li>District Table Topics & Evaluation Contests </li> <li>English Workshop </li></ul> \n\n <p> Mandarin Track: </p><p className="font-bold !text-black">Mandarin Workshop </p><p>Division L & V - International Speech & Evaluation Contests</p>',
+          detail: '<p class="font-bold">English Track : </p>  \n <ul class="!list-disc !list-inside"><li>English Workshop </li><li>District Table Topics & Evaluation Contests </li> </ul> \n\n <p class="font-bold !mt-2">Mandarin Track: </p><ul class="!list-disc !list-inside"><li>Mandarin Workshop </li><li>Division L & V - International Speech & Evaluation Contests</li></ul>',
          },
         {
           time: '05:00 PM',
@@ -338,6 +338,7 @@ export const CONFERENCE: ConferenceContent = {
       signoff: 'With pride and gratitude,',
       name: 'Poh Kim Siong',
       title: 'DTM, PID, PRA',
+      photo: 'Picture_Poh_Kim.jpeg',
     },
     {
       paragraphs: [
@@ -353,6 +354,18 @@ export const CONFERENCE: ConferenceContent = {
       title: 'DTM, PID',
       photo: 'Picture_Augustine_Lee.jpeg',
     },
+    {
+      paragraphs: [
+        'When I joined Toastmasters as someone shy to speak and unsure how to improve myself. Self-development books gave me knowledge, but I had no place to practise, make mistakes and grow.',
+        'Toastmasters gave me that stage.',
+        'I came to learn how to speak, but along the way, I found my voice and learnt how to tell my stories. I also discovered courage, respect, integrity, service and excellence.',
+        'Over time, what became more meaningful was helping others find their voices and discover their stories.',
+        'Toastmasters gave me a stage to find my voice. My purpose now is to help others find theirs—and tell the stories only they can tell.'
+      ],
+      name: 'Anand Ariyarathinam',
+      title: 'DTM',
+      photo: 'Picture_Anand.jpeg',
+    }
   ],
 
   /* [REAL] — the committee's FAQ (18 Sep 2026), grouped as they grouped it.

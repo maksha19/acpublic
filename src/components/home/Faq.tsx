@@ -19,7 +19,6 @@ export default function Faq() {
         {CONFERENCE.faq.map((category, i) => (
           <details
             key={category.name}
-            open={i === 0}
             className="group/cat rounded-lg border border-border bg-white"
           >
             <summary
