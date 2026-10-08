@@ -86,12 +86,15 @@ export interface Committee {
 
 /** A letter to members, rendered as one piece: optional greeting, paragraphs
  *  in order, optional sign-off, and the writer's name and designations. */
-export interface MemberMessage {
+export interface MemberMessageContent {
   salutation?: string
   paragraphs: string[]
   signoff?: string
-  name: string
-  title: string
+}
+
+export interface MemberMessage {
+  en?: MemberMessageContent & { name: string; title: string }
+  zh?: MemberMessageContent & { name: string; title: string }
   /** File name under public/. Without one, the card shows initials. */
   photo?: string
 }
@@ -328,43 +331,73 @@ export const CONFERENCE: ConferenceContent = {
   /* [REAL] — messages to members (25 Sep 2026), printed as written. */
   memberMessages: [
     {
-      salutation: 'Dear Members and Friends,',
-      paragraphs: [
-        'The Annual Conference is more than an event — it is a stage where voices rise, stories are shared, and growth is celebrated. Your Story, Your Stage reminds us that every journey matters, every voice carries power, and every member contributes to the legacy of our District.',
-        'As I look back on my own path, I see how Toastmasters has given me courage to speak, wisdom to lead, and friendships that last a lifetime. Each speech, each meeting, each challenge has shaped us into stronger communicators and leaders.',
-        'AC2027 is not just about listening — it is about participating, connecting, and inspiring. When you step onto the stage, you do not stand alone. You stand with the support of a community that believes in you, celebrates you, and grows with you.',
-        'Let us embrace this conference as a moment to honor our past, ignite our present, and shape our future. Together, we write the next chapter of our story.',
-      ],
-      signoff: 'With pride and gratitude,',
-      name: 'Poh Kim Siong',
-      title: 'DTM, PID, PRA',
+      en: {
+        salutation: 'Dear Members and Friends,',
+        paragraphs: [
+          'The Annual Conference is more than an event — it is a stage where voices rise, stories are shared, and growth is celebrated. Your Story, Your Stage reminds us that every journey matters, every voice carries power, and every member contributes to the legacy of our District.',
+          'As I look back on my own path, I see how Toastmasters has given me courage to speak, wisdom to lead, and friendships that last a lifetime. Each speech, each meeting, each challenge has shaped us into stronger communicators and leaders.',
+          'AC2027 is not just about listening — it is about participating, connecting, and inspiring. When you step onto the stage, you do not stand alone. You stand with the support of a community that believes in you, celebrates you, and grows with you.',
+          'Let us embrace this conference as a moment to honor our past, ignite our present, and shape our future. Together, we write the next chapter of our story.',
+        ],
+        signoff: 'With pride and gratitude,',
+        name: 'Poh Kim Siong',
+        title: 'DTM, PID, PRA',
+      },
+      zh: {
+        salutation: '亲爱的会员与朋友们：',
+        paragraphs: [
+          '年度大会不仅仅是一场活动——它是一座舞台，让声音响起、故事分享、成长被赞颂。"你的故事，你的舞台"提醒我们：每一段旅程都重要，每一个声音都充满力量，每一位会员都为我们区的传承贡献一份力量。',
+          '回顾我的旅程，讲演会赋予我勇气去表达、智慧去领导，以及一生珍贵的友谊。每一次演讲、每一场会议、每一个挑战，都塑造了我们，成为更强的沟通者与领导者。',
+          'AC2027 不只是倾听——它更是参与、连接与启发。当你走上舞台，你并不孤单。你身后有一个相信你、庆祝你、与您共同成长的社群。',
+          '让我们把这次大会当作一个时刻：致敬过去、点燃现在、塑造未来。携手同行，我们一起书写下一个篇章。',
+        ],
+        signoff: '满怀自豪与感恩，',
+        name: '傅金祥',
+        title: 'DTM，PID，PRA',
+      },
       photo: 'Picture_Poh_Kim.jpeg',
     },
     {
-      paragraphs: [
-        'What did I learn in my forty plus years in Toastmasters?',
-        'When one joins Toastmasters, one must be ready to serve and drink T.E.A.',
-        'Time – one must allocate time to prepare speeches, volunteer for leader roles in the club and District and have a goal to reach the various awards in the Organisation.',
-        'Enthusiasm – when one is serving the district or making speeches, one must enjoy and be enthusiastic in the respective roles.',
-        'Attitude – if you want your presentation to “wow” the audience, your attitude is of the utmost importance.',
-        'Toastmasters taught me that with Time every speech is a gift when peppered with a tinge of Enthusiasm plus a sprinkling of Attitude for maximum impact.',
-        'It is a gift to inspire, to connect, and to lead.',
-      ],
-      name: 'Augustine Lee',
-      title: 'DTM, PID',
+      en: {
+        paragraphs: [
+          'What did I learn in my forty plus years in Toastmasters?',
+          'When one joins Toastmasters, one must be ready to serve and drink T.E.A.',
+          'Time – one must allocate time to prepare speeches, volunteer for leader roles in the club and District and have a goal to reach the various awards in the Organisation.',
+          'Enthusiasm – when one is serving the district or making speeches, one must enjoy and be enthusiastic in the respective roles.',
+          'Attitude – if you want your presentation to “wow” the audience, your attitude is of the utmost importance.',
+          'Toastmasters taught me that with Time every speech is a gift when peppered with a tinge of Enthusiasm plus a sprinkling of Attitude for maximum impact.',
+          'It is a gift to inspire, to connect, and to lead.',
+        ],
+        name: 'Augustine Lee',
+        title: 'DTM, PID',
+      },
       photo: 'Picture_Augustine_Lee.jpeg',
     },
     {
-      paragraphs: [
-        'When I joined Toastmasters as someone shy to speak and unsure how to improve myself. Self-development books gave me knowledge, but I had no place to practise, make mistakes and grow.',
-        'Toastmasters gave me that stage.',
-        'I came to learn how to speak, but along the way, I found my voice and learnt how to tell my stories. I also discovered courage, respect, integrity, service and excellence.',
-        'Over time, what became more meaningful was helping others find their voices and discover their stories.',
-        'Toastmasters gave me a stage to find my voice. My purpose now is to help others find theirs—and tell the stories only they can tell.'
-      ],
-      name: 'Anand Ariyarathinam',
-      title: 'DTM',
+      en: {
+        paragraphs: [
+          'When I joined Toastmasters as someone shy to speak and unsure how to improve myself. Self-development books gave me knowledge, but I had no place to practise, make mistakes and grow.',
+          'Toastmasters gave me that stage.',
+          'I came to learn how to speak, but along the way, I found my voice and learnt how to tell my stories. I also discovered courage, respect, integrity, service and excellence.',
+          'Over time, what became more meaningful was helping others find their voices and discover their stories.',
+          'Toastmasters gave me a stage to find my voice. My purpose now is to help others find theirs—and tell the stories only they can tell.'
+        ],
+        name: 'Anand Ariyarathinam',
+        title: 'DTM',
+      },
       photo: 'Picture_Anand.jpeg',
+    },
+    {
+      zh: {
+        paragraphs: [
+          '岁月如梭，转眼间，我参与国际讲演会已有26年。回首初登舞台时，那份忐忑与胆怯，至今仍记忆犹新。一路走来，从害怕开口，到学会从容表达，更懂得享受演讲的魅力。国际讲演会不仅磨炼了我的口才，更让我在一次次挑战中认识自己、突破自己。26年，是成长的旅程，是蜕变的见证，更是坚持与热爱的最佳诠释。感谢这一路相伴，让我继续勇敢站上舞台，分享精彩，传递力量。',
+          '学无止境，活到老学到老'
+        ],
+        signoff: 'Learning Is A Lifelong Journey',
+        name: '張迎祥',
+        title: 'DTM',
+      },
+      photo: 'Picture_Teo_Ging.JPG',
     }
   ],
 
