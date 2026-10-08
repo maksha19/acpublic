@@ -33,7 +33,7 @@ function MessageCard({ message: m }: { message: MemberMessage }) {
   const bodyId = useId()
 
   const hasZh = !!m.zh
-  const content = (lang === 'en' ? m.en : m.zh) || m.en || m.zh
+  const content = ((lang === 'en' ? m.en : m.zh) || m.en || m.zh)!
 
   // Auto-collapse when the whole card has left the viewport. Only watched
   // while open, so a closed card costs nothing.
