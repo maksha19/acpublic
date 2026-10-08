@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react'
-import { ChevronDown, Quote } from 'lucide-react'
+import { ChevronDown, Globe, Quote } from 'lucide-react'
 import { CONFERENCE, type MemberMessage } from '../../content/conference'
 import { InitialsAvatar, Section } from './Section'
 
@@ -16,7 +16,7 @@ export default function Testimonials() {
     <Section id="testimonials" title="What members say" kicker="Your voices. Your inspiration." tint="white">
       <div className="grid gap-5 md:grid-cols-2">
         {CONFERENCE.memberMessages.map((m) => (
-          <MessageCard key={m.name} message={m} />
+          <MessageCard key={m.en?.name || m.zh?.name} message={m} />
         ))}
       </div>
     </Section>
@@ -28,8 +28,12 @@ const COLLAPSED = 'max-h-44'
 
 function MessageCard({ message: m }: { message: MemberMessage }) {
   const [open, setOpen] = useState(false)
+  const [lang, setLang] = useState<'en' | 'zh'>('en')
   const ref = useRef<HTMLElement>(null)
   const bodyId = useId()
+
+  const hasZh = !!m.zh
+  const content = ((lang === 'en' ? m.en : m.zh) || m.en || m.zh)!
 
   // Auto-collapse when the whole card has left the viewport. Only watched
   // while open, so a closed card costs nothing.
@@ -58,11 +62,11 @@ function MessageCard({ message: m }: { message: MemberMessage }) {
           className={`mt-4 space-y-3 overflow-hidden font-quote text-[18px] italic leading-relaxed
                       transition-[max-height] duration-300 ease-out ${open ? 'max-h-[200rem]' : COLLAPSED}`}
         >
-          {m.salutation && <p>{m.salutation}</p>}
-          {m.paragraphs.map((p) => (
+          {content.salutation && <p>{content.salutation}</p>}
+          {content.paragraphs.map((p) => (
             <p key={p}>{p}</p>
           ))}
-          {m.signoff && <p>{m.signoff}</p>}
+          {content.signoff && <p>{content.signoff}</p>}
         </blockquote>
         {!open && (
           <div
@@ -72,20 +76,34 @@ function MessageCard({ message: m }: { message: MemberMessage }) {
         )}
       </div>
 
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
-        aria-controls={bodyId}
-        className="mt-3 inline-flex min-h-11 items-center gap-1 self-start font-heading font-semibold
-                   text-primary underline-offset-4 hover:underline"
-      >
-        {open ? 'Show less' : 'Read the full story'}
-        <ChevronDown
-          className={`size-4 transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
-          aria-hidden="true"
-        />
-      </button>
+      <div className="mt-3 flex items-center justify-between gap-3">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          aria-controls={bodyId}
+          className="inline-flex min-h-11 items-center gap-1 font-heading font-semibold
+                     text-primary underline-offset-4 hover:underline"
+        >
+          {open ? 'Show less' : 'Read the full story'}
+          <ChevronDown
+            className={`size-4 transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
+            aria-hidden="true"
+          />
+        </button>
+        {hasZh && (
+          <button
+            type="button"
+            onClick={() => setLang((v) => (v === 'en' ? 'zh' : 'en'))}
+            className="inline-flex min-h-11 items-center gap-1 rounded-md border border-border px-3
+                       text-sm font-medium text-muted-fg transition-colors hover:bg-secondary/50"
+            title={lang === 'en' ? '中文' : 'English'}
+          >
+            <Globe className="size-4" aria-hidden="true" />
+            {lang === 'en' ? '中文' : 'EN'}
+          </button>
+        )}
+      </div>
 
       <figcaption className="mt-5 flex items-center gap-4 border-t border-border pt-5">
         {m.photo ? (
@@ -102,11 +120,11 @@ function MessageCard({ message: m }: { message: MemberMessage }) {
             />
           </span>
         ) : (
-          <InitialsAvatar name={m.name} className="size-12 text-base" />
+          <InitialsAvatar name={content.name} className="size-12 text-base" />
         )}
         <span>
-          <span className="block font-heading text-lg font-semibold">{m.name}</span>
-          <span className="block text-[15px] text-muted-fg">{m.title}</span>
+          <span className="block font-heading text-lg font-semibold">{content.name}</span>
+          <span className="block text-[15px] text-muted-fg">{content.title}</span>
         </span>
       </figcaption>
     </figure>
