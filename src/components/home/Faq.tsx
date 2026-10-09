@@ -16,10 +16,9 @@ export default function Faq() {
   return (
     <Section id="faq" title="Frequently Asked Questions (FAQs)" kicker="Before you ask" tint="white">
       <div className="space-y-3">
-        {CONFERENCE.faq.map((category, i) => (
+        {CONFERENCE.faq.map((category) => (
           <details
             key={category.name}
-            open={i === 0}
             className="group/cat rounded-lg border border-border bg-white"
           >
             <summary
