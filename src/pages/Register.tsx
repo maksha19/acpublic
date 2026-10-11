@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { ArrowRight, User, Users, DotIcon } from 'lucide-react'
+import { ArrowRight, User, Users, DotIcon, ArrowLeft } from 'lucide-react'
 import { ApiError, createRegistration, getEvent } from '../lib/api'
 import { money, priceLine } from '../lib/format'
 import { emptyPerson, personSchema, type PersonValues } from '../lib/person'
@@ -110,8 +110,8 @@ export default function Register() {
               </span>
             )}
           </p>
-          <Button variant="ghost" onClick={() => setSeats(null)} className="!px-3">
-            Change
+          <Button variant="secondary" onClick={() => setSeats(null)} className="!px-3">
+             <ArrowLeft className="size-4" aria-hidden="true" /> Back
           </Button>
         </div>
       </Card>
@@ -225,8 +225,7 @@ function BookingChoice({
         price={money(event?.tableFee, event?.currency)}
         priceNote={
           event
-            ? `${tableSeats} places · ${money(event.groupFee ?? event.fee, event.currency)} per pax · one payment`
-            : `${tableSeats} places · one payment`
+            ? `${tableSeats} seats` : ``
         }
         available={tableOpen}
         unavailableNote={
@@ -280,9 +279,7 @@ function Option({
         <Icon className="size-6 shrink-0 text-primary" aria-hidden="true" />
         <h2 className="text-xl">{title}</h2>
       </div>
-      <p className="mt-3 font-heading text-2xl font-bold text-primary tnum">{price}</p>
-      <p className="text-[15px] text-muted-fg">{priceNote}</p>
-
+      <p className="mt-3 font-heading text-2xl font-bold text-primary tnum">{price} <span className="text-[15px] text-muted-fg">{priceNote}</span></p>
       <ul className="mt-4 flex-1 space-y-2">
         {bullets.map((b) => (
           <li key={b} className="flex gap-2 text-[16px]">
@@ -294,7 +291,7 @@ function Option({
 
       <div className="mt-5">
         {available ? (
-          <Button onClick={onChoose} variant={highlight ? 'primary' : 'secondary'} className="w-full">
+          <Button onClick={onChoose} variant={highlight ? 'primary' : 'secondary'} className="w-full cursor-pointer">
             {cta} <ArrowRight className="size-4" aria-hidden="true" />
           </Button>
         ) : (
