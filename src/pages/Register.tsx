@@ -132,8 +132,7 @@ export default function Register() {
 
           {isTable && (
             <Alert tone="info" title="These are your own details">
-              You are attendee 1 of {seats}. We will ask for the other {seats - 1} names later —
-              there is nothing to fill in for them now.
+              You are attendee 1 of {seats}. We will ask for the other {seats - 1} names later.
             </Alert>
           )}
 

@@ -1,7 +1,7 @@
 import type { LucideIcon } from 'lucide-react'
 import { User, Users, DotIcon } from 'lucide-react'
 import { CONFERENCE } from '../../content/conference'
-import { money, places, sgDate } from '../../lib/format'
+import { money, places } from '../../lib/format'
 import { Alert, LinkButton, PriceWindowNote, Spinner } from '../ui'
 import { Section } from './Section'
 import type { EventInfo } from '../../lib/types'
@@ -113,10 +113,10 @@ export default function Pricing({
    capacity and the next window's fee. Nothing is hardcoded, so the committee
    editing the pricing in the admin portal rewrites this paragraph too. */
 function EarlyBirdCallout({ event }: { event: EventInfo }) {
-  const from = sgDate(event.priceWindowStartsUtc)
-  const to = sgDate(event.priceWindowEndsUtc)
-  const next = event.nextPriceWindow
-  const period = from && to ? ` from ${from} to ${to}` : to ? ` until ${to}` : ''
+  // const from = sgDate(event.priceWindowStartsUtc)
+  // const to = sgDate(event.priceWindowEndsUtc)
+  // const next = event.nextPriceWindow
+  // const period = from && to ? ` from ${from} to ${to}` : to ? ` until ${to}` : ''
   return (
     <div
       className="rounded-lg border-2 border-accent bg-[#FFF5E6] p-5 sm:p-6"
@@ -133,14 +133,6 @@ function EarlyBirdCallout({ event }: { event: EventInfo }) {
       ) : null}
       <p className="mt-2 text-[16px] tnum">
         Early Bird Ticket of <strong>{money(event.fee, event.currency)} per pax</strong>
-        {period}.
-        {next && (
-          <>
-            {' '}
-            Full Ticket price of <strong>{money(next.fee, event.currency)} per pax</strong> will apply
-            after that.
-          </>
-        )}
       </p>
     </div>
   )

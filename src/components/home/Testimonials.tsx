@@ -123,8 +123,8 @@ function MessageCard({ message: m }: { message: MemberMessage }) {
           <InitialsAvatar name={content.name} className="size-12 text-base" />
         )}
         <span>
-          <span className="block font-heading text-lg font-semibold">{content.name}</span>
-          <span className="block text-[15px] text-muted-fg">{content.title}</span>
+          <span className="block font-heading text-lg font-semibold">{content.name} , {content.title}</span>
+          <span className="block text-[15px] text-muted-fg">{content.designations}</span>
         </span>
       </figcaption>
     </figure>

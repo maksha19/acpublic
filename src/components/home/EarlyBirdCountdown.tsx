@@ -48,7 +48,7 @@ export default function EarlyBirdCountdown({ event }: { event?: EventInfo }) {
 
   if (!live || over || !event) return null
 
-  const { days, hours, minutes, seconds } = split(target - now)
+  const { days, hours } = split(target - now)
   const endsOn = sgDate(endsAt)
   const next = event.nextPriceWindow
 
@@ -56,7 +56,7 @@ export default function EarlyBirdCountdown({ event }: { event?: EventInfo }) {
     <div
       role="timer"
       aria-label={`Early bird pricing ends on ${endsOn ?? 'the published date'}`}
-      className="ac-shimmer-border mt-7 rounded-xl p-[2px]"
+      className="lg:w-2/3 ac-shimmer-border mt-7 rounded-xl p-[2px]"
     >
       <div className="rounded-[10px] bg-primary/95 px-4 py-4 sm:px-6 sm:py-5">
         <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
@@ -74,10 +74,10 @@ export default function EarlyBirdCountdown({ event }: { event?: EventInfo }) {
             <div>
               <p className="flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.14em] text-accent">
                 <span className="ac-blink inline-block size-2 rounded-full bg-accent" aria-hidden="true" />
-                Early bird ends in
+                Early Bird Ticket , ends at 7 Nov 
               </p>
               <p className="mt-1 font-heading text-lg font-bold text-white sm:text-xl">
-                {money(event.fee, event.currency)} per pax
+                {money(event.fee, event.currency)} per pax 
                 {next && (
                   <span className="font-normal text-white/80">
                     {' '}
@@ -94,11 +94,9 @@ export default function EarlyBirdCountdown({ event }: { event?: EventInfo }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-2 sm:gap-3" aria-hidden="true">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3" aria-hidden="true">
             <Unit value={days} label={days === 1 ? 'Day' : 'Days'} />
             <Unit value={hours} label="Hours" />
-            <Unit value={minutes} label="Mins" />
-            <Unit value={seconds} label="Secs" hot />
           </div>
         </div>
       </div>

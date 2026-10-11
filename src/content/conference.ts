@@ -93,8 +93,8 @@ export interface MemberMessageContent {
 }
 
 export interface MemberMessage {
-  en?: MemberMessageContent & { name: string; title: string }
-  zh?: MemberMessageContent & { name: string; title: string }
+  en?: MemberMessageContent & { name: string; title: string , designations?: string}
+  zh?: MemberMessageContent & { name: string; title: string , designations?: string}
   /** File name under public/. Without one, the card shows initials. */
   photo?: string
 }
@@ -120,7 +120,9 @@ export interface ConferenceContent {
     name: string
     stats: Stat[]
     socials: SocialLink[]
-    contactEmail: string
+    contactEmail: string,
+    contactPhone: string,
+    country: string
   }
   /** Mirrors seed.py EVENT so the hero renders before (or without) the API.
    *  If the seed's dates change, change these too. */
@@ -156,7 +158,9 @@ export const CONFERENCE: ConferenceContent = {
       { label: 'LinkedIn', href: 'https://www.linkedin.com/company/toastmasters-district-80/' },
       { label: 'YouTube', href: 'https://www.youtube.com/@singaporetoastmastersdistr9843' },
     ],
-    contactEmail: 'ac2027@d80toastmasters.org',
+    contactEmail: 'd80ac2027@gmail.com',
+    contactPhone: '+65 8198 7088',
+    country: 'Singapore',
   },
 
   /* [REAL] — committee's dates (13 Sep 2026); mirrors ac-infra/scripts/seed.py EVENT. */
@@ -165,7 +169,7 @@ export const CONFERENCE: ConferenceContent = {
   /* [REAL] — the committee's theme, tagline and event highlights (13 and
      18 Sep 2026). */
   hero: {
-    theme: 'Your Story, Your Stage .',
+    theme: 'YOUR STORY, YOUR STAGE .',
     tagline: 'Two Days of Stories. One Stage. A Lifetime of Inspiration.',
     highlights: ['Keynote Speeches', 'Champion Insights', 'Speech Contest Finals', 'Gala Dinner'],
   },
@@ -334,14 +338,15 @@ export const CONFERENCE: ConferenceContent = {
       en: {
         salutation: 'Dear Members and Friends,',
         paragraphs: [
-          'The Annual Conference is more than an event — it is a stage where voices rise, stories are shared, and growth is celebrated. Your Story, Your Stage reminds us that every journey matters, every voice carries power, and every member contributes to the legacy of our District.',
+          'The Annual Conference is more than an event — it is a stage where voices rise, stories are shared, and growth is celebrated. YOUR STORY, YOUR STAGE. reminds us that every journey matters, every voice carries power, and every member contributes to the legacy of our District.',
           'As I look back on my own path, I see how Toastmasters has given me courage to speak, wisdom to lead, and friendships that last a lifetime. Each speech, each meeting, each challenge has shaped us into stronger communicators and leaders.',
           'AC2027 is not just about listening — it is about participating, connecting, and inspiring. When you step onto the stage, you do not stand alone. You stand with the support of a community that believes in you, celebrates you, and grows with you.',
           'Let us embrace this conference as a moment to honor our past, ignite our present, and shape our future. Together, we write the next chapter of our story.',
         ],
         signoff: 'With pride and gratitude,',
         name: 'Poh Kim Siong',
-        title: 'DTM, PID, PRA',
+        title: 'DTM',
+        designations: 'PID, PRA',
       },
       zh: {
         salutation: '亲爱的会员与朋友们：',
@@ -353,7 +358,8 @@ export const CONFERENCE: ConferenceContent = {
         ],
         signoff: '满怀自豪与感恩，',
         name: '傅金祥',
-        title: 'DTM，PID，PRA',
+        title: 'DTM',
+        designations: 'PID, PRA',
       },
       photo: 'Picture_Poh_Kim.jpeg',
     },
@@ -369,7 +375,8 @@ export const CONFERENCE: ConferenceContent = {
           'It is a gift to inspire, to connect, and to lead.',
         ],
         name: 'Augustine Lee',
-        title: 'DTM, PID',
+        title: 'DTM',
+        designations: 'PID'
       },
       photo: 'Picture_Augustine_Lee.jpeg',
     },
@@ -529,7 +536,7 @@ export const CONFERENCE: ConferenceContent = {
 
   /* [MOCK] heading and body; the live fee shown next to it comes from the API. */
   finalCta: {
-    heading: 'Your story. Your stage. Your seat is waiting.',
+    heading: 'YOUR STORY, YOUR STAGE .',
     body: 'Join three hundred Toastmasters for two days of keynote speeches, champion insights, the contest finals and the gala dinner and be in the room when District 80 takes the stage.',
   },
 }

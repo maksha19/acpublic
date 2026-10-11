@@ -39,20 +39,6 @@ export default function Hero({ event }: { event?: EventInfo }) {
 
         <p className="mt-4 max-w-2xl text-lg text-white/85">{CONFERENCE.hero.tagline}</p>
 
-        {/* The poster's four highlights, as a list — a screen reader hears
-            four items, not one line with bullets read as "dot". */}
-        <ul className="mt-5 flex flex-wrap gap-2" aria-label="Event highlights">
-          {CONFERENCE.hero.highlights.map((h) => (
-            <li
-              key={h}
-              className="inline-flex min-h-9 items-center rounded-full border border-white/40
-                         px-3 font-heading text-[15px] font-semibold text-white"
-            >
-              {h}
-            </li>
-          ))}
-        </ul>
-
         <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-[16px]">
           <span className="inline-flex items-center gap-2">
             <CalendarDays className="size-5 shrink-0" aria-hidden="true" />
@@ -72,6 +58,20 @@ export default function Hero({ event }: { event?: EventInfo }) {
             </span>
           )}
         </div>
+        
+        {/* The poster's four highlights, as a list — a screen reader hears
+            four items, not one line with bullets read as "dot". */}
+        <ul className="mt-2 flex flex-wrap gap-2" aria-label="Event highlights">
+          {CONFERENCE.hero.highlights.map((h) => (
+            <li
+              key={h}
+              className="inline-flex min-h-9 items-center rounded-full border border-white/40
+                         px-3 font-heading text-[12px] font-semibold text-white"
+            >
+              {h}
+            </li>
+          ))}
+        </ul>
 
         <EarlyBirdCountdown event={event} />
 
