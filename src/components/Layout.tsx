@@ -35,7 +35,7 @@ export default function Layout() {
               Annual Conference 2027
             </span>
             <span className="block text-[13px] uppercase tracking-[0.14em] text-white/75">
-              Toastmasters {CONFERENCE.district.name}
+              Toastmasters {CONFERENCE.district.name} {CONFERENCE.district.country}
             </span>
           </NavLink>
           <nav aria-label="Main" className="flex flex-wrap gap-1">
@@ -86,10 +86,11 @@ export default function Layout() {
             <a
               href={`mailto:${CONFERENCE.district.contactEmail}`}
               className="mt-1 inline-flex min-h-11 items-center break-all font-semibold
-                         text-primary underline"
+                         text-primary"
             >
-              {CONFERENCE.district.contactEmail}
+              Email : {CONFERENCE.district.contactEmail}
             </a>
+            <p className="inline-flex items-center break-all font-semibold text-primary"> Mobile: {CONFERENCE.district.contactPhone}</p>
           </div>
           <div>
             <p className="font-heading font-semibold">Follow {CONFERENCE.district.name}</p>
