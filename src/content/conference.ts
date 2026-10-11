@@ -282,10 +282,10 @@ export const CONFERENCE: ConferenceContent = {
   venue: {
     name: 'The Istana Ballroom',
     address: 'Kinex Mall, Level 3, 11 Tanjong Katong Road, Singapore 437157',
-    mapsUrl: 'https://maps.google.com/?q=11+Tanjong+Katong+Road+Singapore+437157',
+    mapsUrl: 'https://www.google.com/maps/place/KINEX/@1.3149285,103.8920117,17z/data=!3m2!4b1!5s0x31da1814255e8221:0xf8b5d6309817bd2!4m6!3m5!1s0x31da181704dd0361:0x9d9ab4620530287c!8m2!3d1.3149231!4d103.8945866!16s%2Fg%2F11h75pcxx9?entry=ttu&g_ep=EgoyMDI2MTAwNy4wIKXMDSoASAFQAw%3D%3D',
     mrt: 'Paya Lebar (EW8 / CC9) is the nearest station — about a ten-minute walk along Tanjong Katong Road.',
     parking:
-      'Parking is available at Kinex Mall, Levels 4 and 5. There is no complimentary parking coupon — standard mall parking rates apply.',
+      'Parking is available at Kinex Mall. There is no complimentary parking coupon — standard mall parking rates apply.',
     notes: [],
   },
 
@@ -293,29 +293,30 @@ export const CONFERENCE: ConferenceContent = {
      committee (13 Sep 2026). Names and post-nominals exactly as given. */
   committee: {
     advisors: [
-      { name: 'Aaron Ting, DTM', role: 'District Director' },
-      { name: 'George Chew, DTM', role: 'Program Quality Director' },
-      { name: 'Zuhriyyah Ariffin', role: 'Club Growth Director' },
+      { name: 'Aaron Ting , DTM', role: 'District Director' },
+      { name: 'George Chew , DTM', role: 'Program Quality Director' },
+      { name: 'Zuhriyyah Ariffin , DTM', role: 'Club Growth Director' },
     ],
     chair: 'Ho Chu Lin, DTM',
     portfolios: [
+      // {name: "Conference", chair: "Ho Chu Lin, DTM", team: []},
       { name: 'Program', chair: 'Jenny Goh', team: ['Eugene Low', 'Anne Lee'] },
       {
         name: 'Gala Night',
         chair: 'Julie Ong, DTM',
         team: ['Kathyrn Galatis', 'Robekka Purba', 'Edmund Chew, DTM'],
       },
-      { name: 'Publicity', chair: 'Goh Shu Ching', team: ['Suzanne Loh, DTM', 'Gordon Yit'] },
+      { name: 'Publicity', chair: 'Goh Shu Ching', team: ['Niza Khalil , DTM','Suzanne Loh , DTM', 'Gordon Yit'] },
       {
         name: 'Marketing',
         chair: 'Lim Jun Jie, DTM',
-        team: ['Veron Lee, DTM', 'Alice Cheong, DTM', 'Yip Li Xian'],
+        team: ['Veron Lee , DTM', 'Alice Cheong , DTM', 'Yip Li Xian'],
       },
-      { name: 'Sponsorship', chair: 'Wiwiek Najihah', team: ['Li Shan Shan, DTM', 'Terry Lee, DTM'] },
+      { name: 'Sponsorship', chair: 'Wiwiek Najihah', team: ['Li Shan Shan , DTM', 'Terry Lee , DTM'] },
       {
         name: 'Admin & Registration',
         chair: 'Lim Cheng Boon, DTM',
-        team: ['Jocelyn Lee', 'Michael Yonathan', 'Jhunilyn Ofiana', 'Niza Khalil, DTM', 'Sandy Goh'],
+        team: ['Jocelyn Lee', 'Michael Yonathan', 'Jhunilyn Ofiana', 'Sandy Goh'],
       },
       { name: 'Finance', chair: 'Charlene Wong', team: ['Koh Mee Zhen'] },
       {
@@ -323,11 +324,11 @@ export const CONFERENCE: ConferenceContent = {
         chair: 'Jamal Shahul Hameed',
         team: ['Ma. Theresa Ang', 'Govindan Rathakrishnan', 'Tan Yan Kit'],
       },
-      { name: 'Hospitality', chair: 'Sam Lim, DTM', team: ['Patricia Lum, DTM', 'Mark Alan Franco Opao'] },
+      { name: 'Hospitality', chair: 'Sam Lim, DTM', team: ['Patricia Lum , DTM', 'Mark Alan Franco Opao'] },
       {
         name: 'Technical',
         chair: 'Manikandan Shanmugam',
-        team: ['Bimla Bai Jeyasingh', 'Sankar Palani, DTM'],
+        team: ['Bimla Bai Jeyasingh', 'Sankar Palani , DTM'],
       },
     ],
   },
