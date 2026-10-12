@@ -18,70 +18,61 @@ export default function Hero({ event }: { event?: EventInfo }) {
   const days = daysUntil(event?.startsOn ?? fb.startsOn)
 
   return (
-    <div className="bg-primary text-white">
+    <div className="bg-[#0D336B] text-white">
       <div className="mx-auto w-full max-w-5xl px-4 py-14 sm:py-10">
         {/* <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-white/75">
           Toastmasters {CONFERENCE.district.name} · {city}
         </p> */}
 
-        {/* One h1 for the whole page. Event name and theme are one heading in
-            two visual registers — the theme is what posters lead with. */}
-        <h1 className="mt-1 text-white">
-          {/* <span className="block text-2xl font-semibold text-white/90 sm:text-3xl">
-            Annual Conference 2027
-          </span> */}
-          {/* The committee edits the theme on the admin Event page; the content
-              file is the offline fallback. */}
-          <span className="mt-1 block font-display text-4xl sm:text-6xl">
-            {event?.theme || CONFERENCE.hero.theme}
-          </span>
-        </h1>
+        <img className="-mt-25 max-w-xl text-lg text-white/85" src={`${import.meta.env.BASE_URL}${CONFERENCE.hero.photo}`} alt="hero image" />
 
-        <p className="mt-4 max-w-2xl text-lg text-white/85">{CONFERENCE.hero.tagline}</p>
+        {/* <p className="mt-4 max-w-2xl text-lg text-white/85">{CONFERENCE.hero.tagline}</p> */}
 
-        <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-[16px]">
-          <span className="inline-flex items-center gap-2">
-            <CalendarDays className="size-5 shrink-0" aria-hidden="true" />
-            {dateLabel}
-          </span>
-          <span className="inline-flex items-center gap-2">
-            <MapPin className="size-5 shrink-0" aria-hidden="true" />
-            {venue}, {city}
-          </span>
-          {days !== null && (
-            // A count, not a clock — computed once per render, nothing ticks.
-            <span
-              className="inline-flex items-center rounded-full bg-accent px-3 py-1
-                         font-heading text-[15px] font-semibold text-primary"
-            >
-              {days === 0 ? 'Happening today' : days === 1 ? '1 day to go' : `${days} days to go`}
+        <div className='-mt-22'>
+          <div className="mt-2 flex flex-wrap items-center gap-x-6 gap-y-3 text-[16px]">
+            <span className="inline-flex items-center gap-2">
+              <CalendarDays className="size-5 shrink-0" aria-hidden="true" />
+              {dateLabel}
             </span>
-          )}
-        </div>
-        
-        {/* The poster's four highlights, as a list — a screen reader hears
+            <span className="inline-flex items-center gap-2">
+              <MapPin className="size-5 shrink-0" aria-hidden="true" />
+              {venue}, {city}
+            </span>
+            {days !== null && (
+              // A count, not a clock — computed once per render, nothing ticks.
+              <span
+                className="inline-flex items-center rounded-full bg-accent px-3 py-1
+                         font-heading text-[15px] font-semibold text-primary"
+              >
+                {days === 0 ? 'Happening today' : days === 1 ? '1 day to go' : `${days} days to go`}
+              </span>
+            )}
+          </div>
+
+          {/* The poster's four highlights, as a list — a screen reader hears
             four items, not one line with bullets read as "dot". */}
-        <ul className="mt-2 flex flex-wrap gap-2" aria-label="Event highlights">
-          {CONFERENCE.hero.highlights.map((h) => (
-            <li
-              key={h}
-              className="inline-flex min-h-9 items-center rounded-full border border-white/40
+          <ul className="mt-2 flex flex-wrap gap-2" aria-label="Event highlights">
+            {CONFERENCE.hero.highlights.map((h) => (
+              <li
+                key={h}
+                className="inline-flex min-h-9 items-center rounded-full border border-white/40
                          px-3 font-heading text-[12px] font-semibold text-white"
-            >
-              {h}
-            </li>
-          ))}
-        </ul>
+              >
+                {h}
+              </li>
+            ))}
+          </ul>
 
-        <EarlyBirdCountdown event={event} />
+          <EarlyBirdCountdown event={event} />
 
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <LinkButton to="/register" variant="inverse">
-            Register now
-          </LinkButton>
-          <LinkButton to="/my" variant="inverseOutline">
-            Check my registration
-          </LinkButton>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <LinkButton to="/register" variant="inverse">
+              Register now
+            </LinkButton>
+            <LinkButton to="/my" variant="inverseOutline">
+              Check my registration
+            </LinkButton>
+          </div>
         </div>
       </div>
     </div>

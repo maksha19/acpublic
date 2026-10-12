@@ -11,7 +11,7 @@ import { CONFERENCE } from '../content/conference'
 
 const navItem = ({ isActive }: { isActive: boolean }) =>
   `inline-flex min-h-11 items-center rounded-md px-3 font-heading text-[15px] font-semibold
-   transition-colors duration-150 ${isActive ? 'bg-white/15 text-white' : 'text-white/85 hover:bg-white/10 hover:text-white'
+   transition-colors duration-150 ${isActive ? 'bg-white/15 text-primary' : 'text-primary/85 hover:bg-primary/10 hover:text-primary'
   }`
 
 export default function Layout() {
@@ -28,14 +28,14 @@ export default function Layout() {
         Skip to content
       </a>
 
-      <header className="bg-primary">
+      <header className="bg-surface">
         <div className="mx-auto flex max-w-5xl flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-          <NavLink to="/" className="text-white">
+          <NavLink to="/" className="text-primary">
+            <span className="block text-[13px] uppercase tracking-[0.14em] text-primary/75">
+              Toastmasters {CONFERENCE.district.name} {CONFERENCE.district.country}
+            </span>
             <span className="block font-heading text-lg font-bold leading-tight">
               Annual Conference 2027
-            </span>
-            <span className="block text-[13px] uppercase tracking-[0.14em] text-white/75">
-              Toastmasters {CONFERENCE.district.name} {CONFERENCE.district.country}
             </span>
           </NavLink>
           <nav aria-label="Main" className="flex flex-wrap gap-1">
@@ -54,17 +54,17 @@ export default function Layout() {
 
       {/* A visible, honest banner. The committee will see this demo and a
           prototype that does not say it is one gets mistaken for finished. */}
-      <div className="bg-accent">
+      {/* <div className="bg-accent">
         <p className="mx-auto max-w-5xl px-4 py-2 text-[15px] font-semibold text-primary">
           Demonstration only — Phase 0 prototype. Data here is not real and emails are not
           delivered.
         </p>
-      </div>
+      </div> */}
 
       {/* Bare: pages own their container. The transactional routes get the old
           classes back via the Contained wrapper in App.tsx; Home runs
           full-width landing bands. */}
-      <main id="main" className="flex-1">
+      <main id="main" className="flex-1 bg-[#0D336B]">
         <Outlet />
       </main>
 

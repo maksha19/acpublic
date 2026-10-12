@@ -32,7 +32,7 @@ function MessageCard({ message: m }: { message: MemberMessage }) {
   const ref = useRef<HTMLElement>(null)
   const bodyId = useId()
 
-  const hasZh = !!m.zh
+  const hasZh = m.en && m.zh
   const content = ((lang === 'en' ? m.en : m.zh) || m.en || m.zh)!
 
   // Auto-collapse when the whole card has left the viewport. Only watched

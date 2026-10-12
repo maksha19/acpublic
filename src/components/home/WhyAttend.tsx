@@ -21,7 +21,7 @@ export default function WhyAttend() {
 
       {/* Stat band. The district itself is the social proof — 4,500 members
           is a bigger endorsement than any quote on this page. */}
-      <div className="bg-primary">
+      <div className="bg-[#0D336B]">
         <div className="mx-auto grid w-full max-w-5xl grid-cols-2 gap-6 px-4 py-8 sm:grid-cols-4 sm:py-10">
           {district.stats.map((s) => (
             <div key={s.label} className="text-center">

@@ -78,12 +78,13 @@ export default function Pricing({
               soldOutNote="Every place has been taken."
               urgency={open && soloOpen ? seatsUrgency(event) : undefined}
               cta={open && soloOpen ? 'Register now' : undefined}
+              highlight
             />
             <PriceCard
               Icon={Users}
               title={`Table of ${tableSeats}`}
               price={money(event.tableFee, event.currency)}
-              priceNote={`${tableSeats} pax · ${money(groupFee, event.currency)} per pax · one payment`}
+              priceNote="for 10 pax"
               badge={
                 saving > 0
                   ? `Group rate — save ${money(saving, event.currency)} per pax`
@@ -200,8 +201,7 @@ function PriceCard({
         )}
       </div>
 
-      <p className="mt-3 font-heading text-2xl font-bold text-primary tnum">{price}</p>
-      <p className="text-[15px] text-muted-fg">{priceNote}</p>
+      <p className="mt-3 font-heading text-2xl font-bold text-primary tnum">{price} <span className="text-[15px] text-muted-fg">{priceNote}</span></p>
 
       <ul className="mt-4 flex-1 space-y-2">
         {bullets.map((b) => (
