@@ -24,11 +24,11 @@ export default function Hero({ event }: { event?: EventInfo }) {
           Toastmasters {CONFERENCE.district.name} · {city}
         </p> */}
 
-        <img className="-mt-25 max-w-xl text-lg text-white/85" src={`${import.meta.env.BASE_URL}${CONFERENCE.hero.photo}`} alt="hero image" />
+        <img className="-mt-25 w-full lg:max-w-lg text-lg text-white/85" src={`${import.meta.env.BASE_URL}${CONFERENCE.hero.photo}`} alt="hero image" />
 
         {/* <p className="mt-4 max-w-2xl text-lg text-white/85">{CONFERENCE.hero.tagline}</p> */}
 
-        <div className='-mt-22'>
+        <div className='-mt-18 lg:-mt-22'>
           <div className="mt-2 flex flex-wrap items-center gap-x-6 gap-y-3 text-[16px]">
             <span className="inline-flex items-center gap-2">
               <CalendarDays className="size-5 shrink-0" aria-hidden="true" />
