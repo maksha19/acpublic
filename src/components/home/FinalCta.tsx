@@ -8,7 +8,7 @@ import type { EventInfo } from '../../lib/types'
    action on paper is a dead button. */
 export default function FinalCta({ event }: { event?: EventInfo }) {
   return (
-    <section id="register-cta" aria-labelledby="register-cta-heading" className="bg-primary print:hidden">
+    <section id="register-cta" aria-labelledby="register-cta-heading" className="bg-[#0D336B] print:hidden">
       <div className="mx-auto w-full max-w-5xl px-4 py-12 text-center sm:py-16">
         <h2 id="register-cta-heading" className="text-2xl text-white sm:text-3xl">
           {CONFERENCE.finalCta.heading}

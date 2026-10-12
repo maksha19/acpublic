@@ -223,10 +223,7 @@ function BookingChoice({
         Icon={Users}
         title={`A table of ${tableSeats}`}
         price={money(event?.tableFee, event?.currency)}
-        priceNote={
-          event
-            ? `${tableSeats} seats` : ``
-        }
+        priceNote="for 10 pax"
         available={tableOpen}
         unavailableNote={
           soloOpen

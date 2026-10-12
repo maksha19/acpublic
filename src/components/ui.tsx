@@ -185,8 +185,8 @@ export function Spinner({ label = 'Loading' }: { label?: string }) {
 export function PageHeader({ title, lede }: { title: string; lede?: string }) {
   return (
     <header className="mb-6">
-      <h1 className="text-3xl sm:text-4xl">{title}</h1>
-      {lede && <p className="mt-2 max-w-2xl text-lg text-muted-fg">{lede}</p>}
+      <h1 className="text-3xl sm:text-4xl text-white">{title}</h1>
+      {lede && <p className="mt-2 max-w-2xl text-lg text-white/85">{lede}</p>}
     </header>
   )
 }

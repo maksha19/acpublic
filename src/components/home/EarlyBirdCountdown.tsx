@@ -74,7 +74,7 @@ export default function EarlyBirdCountdown({ event }: { event?: EventInfo }) {
             <div>
               <p className="flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.14em] text-accent">
                 <span className="ac-blink inline-block size-2 rounded-full bg-accent" aria-hidden="true" />
-                Early Bird Ticket , ends at 7 Nov 
+                Early Bird Ticket , ends on 7 Nov 2026
               </p>
               <p className="mt-1 font-heading text-lg font-bold text-white sm:text-xl">
                 {money(event.fee, event.currency)} per pax 

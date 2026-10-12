@@ -129,7 +129,7 @@ export interface ConferenceContent {
   fallbackEvent: { dateLabel: string; startsOn: string; city: string }
   /** The theme is the committee's headline; `highlights` is the programme in
    *  four words each, as printed on the poster. */
-  hero: { theme: string; tagline: string; highlights: string[] }
+  hero: { theme: string; tagline: string; highlights: string[]; photo: string }
   whyAttend: WhyAttendItem[]
   speakers: Speaker[]
   agendaDays: AgendaDay[]
@@ -172,6 +172,7 @@ export const CONFERENCE: ConferenceContent = {
     theme: 'YOUR STORY, YOUR STAGE .',
     tagline: 'Two Days of Stories. One Stage. A Lifetime of Inspiration.',
     highlights: ['Keynote Speeches', 'Champion Insights', 'Speech Contest Finals', 'Gala Dinner'],
+    photo: 'AC2027_Hero.svg',
   },
 
   /* The four titles are the committee's [REAL] event highlights. The speech
@@ -237,7 +238,7 @@ export const CONFERENCE: ConferenceContent = {
         { time: '12:00 PM', title: 'Lunch Break',},
         { time: '02:00 PM',
           title: 'Concurrent Programme',
-          detail: '<p class="font-bold">English Track : </p>  \n <ul class="!list-disc !list-inside"><li>English Workshop </li><li>District Table Topics & Evaluation Contests </li> </ul> \n\n <p class="font-bold !mt-2">Mandarin Track: </p><ul class="!list-disc !list-inside"><li>Mandarin Workshop </li><li>Division L & V - International Speech & Evaluation Contests</li></ul>',
+          detail: '<p class="font-bold">English Track : </p>  \n <ul class="!list-disc !list-inside"><li>English Workshop </li><li>District Table Topics & Evaluation Contests </li> </ul> \n\n <p class="font-bold !mt-2">Mandarin Track: </p><ul class="!list-disc !list-inside"><li>Division L & V - International Speech & Evaluation Contests</li><li>Mandarin Workshop </li></ul>',
          },
         {
           time: '05:00 PM',
@@ -282,7 +283,7 @@ export const CONFERENCE: ConferenceContent = {
   venue: {
     name: 'The Istana Ballroom',
     address: 'Kinex Mall, Level 3, 11 Tanjong Katong Road, Singapore 437157',
-    mapsUrl: 'https://www.google.com/maps/place/KINEX/@1.3149285,103.8920117,17z/data=!3m2!4b1!5s0x31da1814255e8221:0xf8b5d6309817bd2!4m6!3m5!1s0x31da181704dd0361:0x9d9ab4620530287c!8m2!3d1.3149231!4d103.8945866!16s%2Fg%2F11h75pcxx9?entry=ttu&g_ep=EgoyMDI2MTAwNy4wIKXMDSoASAFQAw%3D%3D',
+    mapsUrl: 'https://maps.app.goo.gl/TN62RBnzqnUuDRJk8',
     mrt: 'Paya Lebar (EW8 / CC9) is the nearest station — about a ten-minute walk along Tanjong Katong Road.',
     parking:
       'Parking is available at Kinex Mall. There is no complimentary parking coupon — standard mall parking rates apply.',
