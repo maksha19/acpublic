@@ -28,7 +28,7 @@ export default function Layout() {
         Skip to content
       </a>
 
-      <header className="bg-surface">
+      <header className="bg-surface z-1000">
         <div className="mx-auto flex max-w-5xl flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <NavLink to="/" className="text-primary">
             <span className="block text-[13px] uppercase tracking-[0.14em] text-primary/75">
