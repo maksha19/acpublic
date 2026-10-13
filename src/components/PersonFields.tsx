@@ -7,7 +7,7 @@ import {
   type Path,
   type PathValue,
 } from 'react-hook-form'
-import { otherOption } from '../lib/person'
+import { MEMBER_ID_ERROR, MEMBER_ID_RE, MEMBER_NOT_IN_ROSTER, otherOption } from '../lib/person'
 import { isClubField, isMemberNumberField, lookupMember, useDirectory } from '../lib/directory'
 import type { PublicField } from '../lib/types'
 import { Field, Input, Select } from './ui'
@@ -149,7 +149,7 @@ function ClubFromRoster<T extends FieldValues>({
         : status === 'checking'
           ? 'Looking up your club…'
           : status === 'missing'
-            ? 'That member number is not in the roster — type your club here.'
+            ? 'That member number is not in the District roster — check it above.'
             : memberField.required
               ? `Enter your ${memberField.label.toLowerCase()} above and we will fill this in.`
               : `Filled in from your ${memberField.label.toLowerCase()}, or type it here.`
@@ -164,6 +164,30 @@ function ClubFromRoster<T extends FieldValues>({
       choices={status === 'choose' ? clubs : undefined}
     />
   )
+}
+
+/* ------------------------------------------------------- live member check ---- */
+
+/** The member ID's own error, shown as it is typed rather than only on submit:
+ *  a wrong number is far easier to fix while the card is still in your hand.
+ *  Same rules as the schema (lib/person.ts), which still blocks the submit.
+ *  Waits for a pause in typing — a 6-digit prefix of an 8-digit ID is a valid
+ *  shape, and "not in the roster" flashing at every digit would be noise. The
+ *  format complaint waits for the field to be left, too. */
+function useLiveMemberError(value: string, touched: boolean, enabled: boolean): string | undefined {
+  const { data: directory } = useDirectory()
+  const [settled, setSettled] = useState(value)
+  useEffect(() => {
+    const timer = setTimeout(() => setSettled(value), LOOKUP_DEBOUNCE_MS)
+    return () => clearTimeout(timer)
+  }, [value])
+
+  const v = settled.trim()
+  if (!enabled || !v || v !== value.trim()) return undefined
+  if (!MEMBER_ID_RE.test(v)) return touched ? MEMBER_ID_ERROR : undefined
+  // An unloaded or empty roster checks nothing, exactly as the schema does.
+  if (directory && directory.size > 0 && !lookupMember(directory, v)) return MEMBER_NOT_IN_ROSTER
+  return undefined
 }
 
 /* ------------------------------------------------------------ one field ---- */
@@ -187,9 +211,15 @@ function DynamicField<T extends FieldValues>({
 }) {
   const {
     field: ctl,
-    fieldState: { error },
+    fieldState: { error, isTouched },
   } = useController({ control, name: field.key as Path<T> })
-  const message = error?.message
+  const isMember = isMemberNumberField(field)
+  const live = useLiveMemberError(
+    typeof ctl.value === 'string' ? ctl.value : '',
+    isTouched,
+    isMember && !disabled,
+  )
+  const message = error?.message ?? live
   const describedBy = message ? `${id}-error` : undefined
 
   if (field.type === 'boolean') {
@@ -220,7 +250,6 @@ function DynamicField<T extends FieldValues>({
   }
 
   const text = typeof ctl.value === 'string' ? ctl.value : ''
-  const isMember = isMemberNumberField(field)
   return (
     <Field
       label={field.label}

@@ -4,7 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { CircleDashed, Pencil, UserCheck, UserPlus } from 'lucide-react'
 import { ApiError, updateMember } from '../lib/api'
-import { personSchema, personValues, showValue, type PersonValues } from '../lib/person'
+import { personSchema, personValues, showValue, withMemberRule, type PersonValues } from '../lib/person'
+import { useDirectory } from '../lib/directory'
 import PersonFields from './PersonFields'
 import { Alert, Button, Card, Field, Input } from './ui'
 import type { Attendee, PublicField } from '../lib/types'
@@ -185,7 +186,11 @@ function MemberForm({
   onCancel: () => void
 }) {
   const [banner, setBanner] = useState<string | null>(null)
-  const schema = useMemo(() => personSchema('their', fields), [fields])
+  // A guest's member ID is optional, but one that is given must be in the
+  // District roster — and not already hold a place (the server's check).
+  const guestFields = useMemo(() => withMemberRule(fields, 'guest'), [fields])
+  const { data: directory } = useDirectory()
+  const schema = useMemo(() => personSchema('their', guestFields, directory), [guestFields, directory])
 
   const {
     register,
@@ -253,7 +258,7 @@ function MemberForm({
         />
       </Field>
 
-      <PersonFields control={control} fields={fields} idPrefix={id('')} />
+      <PersonFields control={control} fields={guestFields} idPrefix={id('')} />
 
       <div className="flex flex-col gap-3 sm:flex-row">
         <Button type="submit" disabled={save.isPending}>

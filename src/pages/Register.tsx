@@ -5,7 +5,8 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { ArrowRight, User, Users, DotIcon, ArrowLeft } from 'lucide-react'
 import { ApiError, createRegistration, getEvent } from '../lib/api'
 import { money, priceLine } from '../lib/format'
-import { emptyPerson, personSchema, type PersonValues } from '../lib/person'
+import { emptyPerson, personSchema, withMemberRule, type PersonValues } from '../lib/person'
+import { useDirectory } from '../lib/directory'
 import PersonFields from '../components/PersonFields'
 import { remember } from '../lib/session'
 import { Alert, Button, Card, Field, Input, LinkButton, PageHeader, PriceWindowNote } from '../components/ui'
@@ -29,10 +30,11 @@ export default function Register() {
   )
 
   const tableSeats = event?.tableSeats ?? 10
-  const fields = useMemo(() => event?.fields ?? [], [event])
-  // Rebuilt when the event (and so the field list) arrives; react-hook-form
-  // picks up the new resolver on the next validation.
-  const schema = useMemo(() => personSchema('your', fields), [fields])
+  const fields = useMemo(() => withMemberRule(event?.fields ?? [], 'booker'), [event])
+  const { data: directory } = useDirectory()
+  // Rebuilt when the event (and so the field list) or the member roster
+  // arrives; react-hook-form picks up the new resolver on the next validation.
+  const schema = useMemo(() => personSchema('your', fields, directory), [fields, directory])
 
   const {
     register,

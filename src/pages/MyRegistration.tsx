@@ -6,7 +6,7 @@ import { MailCheck, Printer, Send, Users } from 'lucide-react'
 import { ApiError, getEvent, getRegistration, requestAccessLink } from '../lib/api'
 import { money, priceLine } from '../lib/format'
 import { showValue } from '../lib/person'
-import { recall } from '../lib/session'
+import { forget, recall } from '../lib/session'
 import Roster from '../components/Roster'
 import {
   Alert,
@@ -61,6 +61,11 @@ export default function MyRegistration() {
   const code = urlCode || remembered?.code || ''
   const accessKey = urlKey || (remembered?.code === code ? (remembered?.accessKey ?? '') : '')
 
+  // Set by "Request a fresh link". Clearing the URL alone is not enough: the
+  // code and key would come straight back from this browser's memory and the
+  // same failed lookup would render again, so the button looked dead.
+  const [asking, setAsking] = useState(false)
+
   const { data: event } = useQuery({ queryKey: ['event'], queryFn: getEvent })
   const query = useQuery({
     queryKey: ['registration', code, accessKey],
@@ -68,7 +73,22 @@ export default function MyRegistration() {
     enabled: !!code && !!accessKey,
   })
 
-  if (!code || !accessKey) return <RequestLink initialCode={code} />
+  if (asking || !code || !accessKey) return <RequestLink initialCode={code} />
+
+  function requestFresh() {
+    // A remembered pair the API has refused is dead — drop it, or the next
+    // visit to this page fails the same way. Only on a refusal: a network
+    // blip says nothing about the key.
+    if (
+      remembered?.code === code &&
+      query.error instanceof ApiError &&
+      query.error.status === 404
+    ) {
+      forget()
+    }
+    setParams({})
+    setAsking(true)
+  }
 
   if (query.isLoading) return <Spinner label="Loading your registration" />
 
@@ -82,7 +102,7 @@ export default function MyRegistration() {
             to the address you registered with.
           </Alert>
           <div className="mt-6">
-            <Button variant="secondary" onClick={() => setParams({})} className="w-full sm:w-auto">
+            <Button variant="secondary" onClick={requestFresh} className="w-full sm:w-auto">
               Request a fresh link
             </Button>
           </div>
