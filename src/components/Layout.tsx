@@ -32,7 +32,7 @@ export default function Layout() {
         <div className="mx-auto flex max-w-5xl flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <NavLink to="/" className="text-primary">
             <span className="block text-[13px] uppercase tracking-[0.14em] text-primary/75">
-              Toastmasters {CONFERENCE.district.name} {CONFERENCE.district.country}
+              {CONFERENCE.district.name} {CONFERENCE.district.country}
             </span>
             <span className="block font-heading text-lg font-bold leading-tight">
               Annual Conference 2027

@@ -37,8 +37,8 @@ export default function Home() {
       <Speakers />
       <Agenda />
       <Testimonials />
-      <Pricing event={event} isLoading={isLoading} error={error} />
       <HowItWorks />
+      <Pricing event={event} isLoading={isLoading} error={error} />
       <VenueSection event={event} />
       <Faq />
       <Committee />

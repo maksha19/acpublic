@@ -170,8 +170,8 @@ export const CONFERENCE: ConferenceContent = {
      18 Sep 2026). */
   hero: {
     theme: 'YOUR STORY, YOUR STAGE .',
-    tagline: 'Two Days of Stories. One Stage. A Lifetime of Inspiration.',
-    highlights: ['Keynote Speeches', 'Champion Insights', 'Speech Contest Finals', 'Gala Dinner'],
+    tagline: 'Two Days of Stories. One Stage.',
+    highlights: ['Keynote Speech', 'Champion Spotlight', 'Speech Contest Finals', 'Gala Dinner'],
     photo: 'AC2027_Hero.svg',
   },
 
@@ -181,23 +181,23 @@ export const CONFERENCE: ConferenceContent = {
   whyAttend: [
     {
       Icon: Mic,
-      title: 'Keynote speeches',
-      body: 'Speakers at the top of their craft on what it takes to find your story — and tell it so it lands.',
+      title: 'Keynote Speech',
+      body: 'Powerful Leadership Lessons from an International Director.',
     },
     {
       Icon: Users,
-      title: 'Champion insights',
-      body: 'Past champions and district leaders on how they got there, in conversation with members from 200+ clubs.',
+      title: 'Champion Spotlight',
+      body: 'Inspiring Insights from a World Champion of Public Speaking.',
     },
     {
       Icon: Trophy,
-      title: 'Speech contest',
-      body: 'Exciting District finals for International Speech, Table Topics and Evaluation — the best of District 80 on one stage.',
+      title: 'Speech Contest Finals',
+      body: 'Division Champions Take the Stage for International Speech, Table Topics and Evaluation.',
     },
     {
       Icon: Award,
       title: 'Gala Night',
-      body: 'An elegant evening of culinary artistry and celebration, dedicated to honouring our achievements and inspiring a brighter future.',
+      body: 'An evening that celebrates achievements with fine dining and good company.',
     },
   ],
 
@@ -208,7 +208,7 @@ export const CONFERENCE: ConferenceContent = {
       name: 'Hani Nur Zaihanirah Zaini, DTM. ',
       credentials: 'International Director,',
       session: 'Leading Beyond the Lectern',
-      blurb: '    She made history as the first Sarawakian woman elected to the Toastmasters International Board of Directors. She will share her journey and the lessons she learned along the way.',
+      blurb: 'She made history as the first Sarawakian woman elected to the Toastmasters International Board of Directors. She brings us into her transformative journey as a leader.',
     },
     // {
     //   name: 'Rizal Hamid',
@@ -445,7 +445,7 @@ export const CONFERENCE: ConferenceContent = {
         },
         {
           q: 'Can I get a refund if I am no longer able to attend?',
-          a: 'Full refunds are possible before 31 March 2027. Cancellations made after this date are non-refundable due to venue commitments. However, you can easily transfer your ticket to another Toastmasters member by updating your registration on the portal.',
+          a: 'Tickets are non-refundable. However, you may transfer your ticket to another member by updating the registration details in your portal by 31 March 2027.',
           link: { label: 'Manage my registration', href: '/my' },
         },
         {
@@ -459,11 +459,11 @@ export const CONFERENCE: ConferenceContent = {
         },
         {
           q: 'Can my club book a table?',
-          a: 'Yes — a table seats ten, and is booked in one go with one payment. You do not need all ten names up front: add your guests any time until 24 May 2027, and each guest is emailed their own code as you name them.',
+          a: 'Yes — a table seats ten, and is booked in one go with one payment. You do not need all ten names up front: add your guests any time until 31 March 2027, and each guest is emailed their own code as you name them.',
         },
         {
           q: 'Can I change my details later?',
-          a: 'Yes. Your confirmation email has a personal My Registration link — use it to update your dietary needs, t-shirt size and contact details.',
+          a: 'Yes. Your confirmation email has a personal My Registration link — use it to update your dietary needs and contact details.',
         },
       ],
     },
@@ -502,7 +502,7 @@ export const CONFERENCE: ConferenceContent = {
         {
           q: 'Where can I view the full conference programme?',
           a: 'The programme is in the Agenda section of this page. Please note that the detailed programme and specific session timings are subject to minor adjustments as the event approaches, to ensure the best possible experience.',
-          link: { label: 'See the agenda', href: '#agenda' },
+          link: { label: 'See the programme', href: '#agenda' },
         },
         {
           q: 'What are the main events happening during the conference?',
@@ -517,12 +517,12 @@ export const CONFERENCE: ConferenceContent = {
         },
         {
           q: 'Will the educational workshops and keynotes be recorded for later viewing?',
-          a: 'No, the workshops and keynote sessions will not be recorded. The conference is designed as a fully live, interactive and immersive experience for all. We encourage all delegates to join us in person to experience the full impact of each session.',
+          a: 'The conference is designed as a fully live, interactive and immersive experience for all and will not be recorded. We encourage all delegates to join us in person to experience the full impact of each session.',
         },
       ],
     },
     {
-      name: 'General & Other Info',
+      name: 'General Information',
       items: [
         {
           q: 'Where can I find the most up-to-date details about the event?',
@@ -539,6 +539,6 @@ export const CONFERENCE: ConferenceContent = {
   /* [MOCK] heading and body; the live fee shown next to it comes from the API. */
   finalCta: {
     heading: 'YOUR STORY, YOUR STAGE .',
-    body: 'Join three hundred Toastmasters for two days of keynote speeches, champion insights, the contest finals and the gala dinner and be in the room when District 80 takes the stage.',
+    body: 'oin over 300 Toastmasters for two inspiring days comprising keynote speech, leadership lessons, thrilling speech contest finals and an elegant gala dinner, as District 80 takes the stage.',
   },
 }
