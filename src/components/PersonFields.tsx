@@ -357,7 +357,7 @@ function SelectWithOther({
         onBlur={onBlur}
         aria-invalid={invalid}
       >
-        <option value="">{required ? 'Choose…' : 'Not sure yet'}</option>
+        <option value="">{required ? 'Choose…' : 'Not applicable'}</option>
         {options.map((o) => (
           <option key={o} value={o}>
             {o}

@@ -9,7 +9,7 @@
 const ANCHORS = [
   { href: '#why', label: 'Why attend' },
   { href: '#speakers', label: 'Speakers' },
-  { href: '#agenda', label: 'Agenda' },
+  { href: '#agenda', label: 'Programme' },
   { href: '#pricing', label: 'Pricing' },
   { href: '#venue', label: 'Venue' },
   { href: '#faq', label: 'FAQ' },

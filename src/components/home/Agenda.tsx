@@ -3,7 +3,7 @@ import { Section } from './Section'
 
 export default function Agenda() {
   return (
-    <Section id="agenda" title="Two days at a glance" kicker="Programme">
+    <Section id="agenda" title="Your Conference Journey" kicker="Programme">
       <div className="grid gap-4 md:grid-cols-2">
         {CONFERENCE.agendaDays.map((day) => (
           <div key={day.label} className="rounded-lg border border-border bg-white p-5 sm:p-6">
