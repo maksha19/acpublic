@@ -36,11 +36,11 @@ export default function Home() {
       <WhyAttend />
       <Speakers />
       <Agenda />
-      <Testimonials />
       <HowItWorks />
       <Pricing event={event} isLoading={isLoading} error={error} />
       <VenueSection event={event} />
       <Faq />
+      <Testimonials />
       <Committee />
       <FinalCta event={event} />
     </div>

@@ -125,7 +125,7 @@ function EarlyBirdCallout({ event }: { event: EventInfo }) {
       aria-labelledby="early-bird-heading"
     >
       <h3 id="early-bird-heading" className="text-xl text-primary">
-        Grab your Early Bird Ticket now
+        Grab your Early Bird Ticket now at <strong>{money(event.fee, event.currency)} per pax</strong>
       </h3>
       {event.capacity ? (
         <p className="mt-2 font-heading text-lg font-bold text-destructive tnum">
@@ -133,7 +133,7 @@ function EarlyBirdCallout({ event }: { event: EventInfo }) {
         </p>
       ) : null}
       <p className="mt-2 text-[16px] tnum">
-        Early Bird Ticket of <strong>{money(event.fee, event.currency)} per pax</strong>
+        Full ticket price will be SGD 218 per pax after the Early Bird period.
       </p>
     </div>
   )

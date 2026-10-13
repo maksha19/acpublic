@@ -501,7 +501,7 @@ export const CONFERENCE: ConferenceContent = {
       items: [
         {
           q: 'Where can I view the full conference programme?',
-          a: 'The programme is in the Agenda section of this page. Please note that the detailed programme and specific session timings are subject to minor adjustments as the event approaches, to ensure the best possible experience.',
+          a: 'Please note that the detailed programme and specific session timings are subject to minor adjustments as the event approaches, to ensure the best possible experience.',
           link: { label: 'See the programme', href: '#agenda' },
         },
         {
@@ -539,6 +539,6 @@ export const CONFERENCE: ConferenceContent = {
   /* [MOCK] heading and body; the live fee shown next to it comes from the API. */
   finalCta: {
     heading: 'YOUR STORY, YOUR STAGE .',
-    body: 'oin over 300 Toastmasters for two inspiring days comprising keynote speech, leadership lessons, thrilling speech contest finals and an elegant gala dinner, as District 80 takes the stage.',
+    body: 'Join over 300 Toastmasters for two inspiring days comprising keynote speech, leadership lessons, thrilling speech contest finals and an elegant gala dinner, as District 80 takes the stage.',
   },
 }
