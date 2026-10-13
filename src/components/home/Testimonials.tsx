@@ -13,7 +13,7 @@ import { InitialsAvatar, Section } from './Section'
    has scrolled past it, so the page never stays stretched behind them. */
 export default function Testimonials() {
   return (
-    <Section id="testimonials" title="Past Reflections of District 80 Annual Conference" kicker="Your voices. Your inspiration." tint="white">
+    <Section id="testimonials" title="What Members Say" kicker="Your voices. Your inspiration." tint="white">
       <div className="grid gap-5 md:grid-cols-2">
         {CONFERENCE.memberMessages.map((m) => (
           <MessageCard key={m.en?.name || m.zh?.name} message={m} />
