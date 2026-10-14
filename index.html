@@ -18,6 +18,19 @@
       property="og:description"
       content="Keynote speeches, champion insights, speech contest finals and the gala dinner — 29–30 May 2027, The Istana Ballroom, Singapore."
     />
+    <!-- Link previews (WhatsApp, Facebook, LinkedIn, X). Crawlers need a PNG/JPG
+         at an ABSOLUTE URL — SVG and relative paths are ignored. Points at prd
+         on both branches so this file stays identical across them; previews of
+         dev links show prd's copy. Regenerate og-image.png (1200×630) from
+         public/AC2027_Logo.svg on the brand navy if the artwork changes. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="AC 2027 — Toastmasters District 80" />
+    <meta property="og:image" content="https://district80ac.com/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Your Story, Your Stage. — District 80 Singapore Annual Conference 2027" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://district80ac.com/og-image.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
     <!-- Brand typefaces (Libre Franklin, Aileron, Alice) are self-hosted via
