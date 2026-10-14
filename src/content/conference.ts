@@ -40,10 +40,20 @@ export interface WhyAttendItem {
 export interface Speaker {
   name: string
   credentials: string
+  /** A second, smaller line under the credentials (roles, specialities). */
+  tagline?: string
   session?: string
-  blurb: string
+  blurb?: string
   /** File in public/; omitted → placeholder avatar. */
   photo?: string
+  /** Tailwind classes framing the photo in its circle (object-position,
+   *  scale + origin) — portraits and stage shots need different crops. */
+  photoFraming?: string
+  /** A letter from the speaker, shown collapsed under the blurb. */
+  message?: MemberMessageContent & { heading?: string; signature?: string[] }
+  /** A longer third-person bio, shown collapsed. Strings are paragraphs; an
+   *  object is a headed bullet list, placed where it falls in the text. */
+  bio?: (string | { heading: string; items: string[] })[]
 }
 
 export interface AgendaItem {
@@ -208,16 +218,49 @@ export const CONFERENCE: ConferenceContent = {
   speakers: [
     {
       name: 'Hani Nur Zaihanirah Zaini, DTM. ',
-      credentials: 'International Director,',
-
-      blurb: 'She made history as the first Sarawakian woman elected to the Toastmasters International Board of Directors. She brings us into her transformative journey as a leader.',
-      photo: 'Picture_Hani.jpeg',
+      credentials: 'International Director',
+      // Square copy of Picture_Hani.jpeg with the backdrop extended so the
+      // circle crop keeps her hair; the original is too tall and narrow.
+      photo: 'Picture_Hani_square.jpeg',
+      photoFraming: 'object-center',
+      message: {
+        heading: 'A Message to District 80',
+        salutation: 'My warmest greetings to the members and leaders of District 80!',
+        paragraphs: [
+          'Every one of us has a story worth telling. Some stories begin with the courage to speak up, others with the decision to step outside our comfort zones, and some with a simple willingness to try something new. In Toastmasters, we discover that our stories do more than define who we are — they can inspire others to discover who they are capable of becoming.',
+          'I am delighted to be joining you as the keynote speaker at the Annual Conference in May 2027. I look forward to hearing your stories, learning from your experiences, and celebrating the remarkable people who make District 80 such a vibrant community.',
+          'Until then, keep finding your voice, keep sharing your story, and remember that the stage is not reserved for those who have everything figured out. It belongs to those who are willing to step forward, be seen, and make a difference.',
+          'See you in May 2027. Let’s make it a stage to remember!',
+        ],
+        signoff: 'Warm regards,',
+        signature: [
+          'Hani Nur Zaihanirah Zaini, DTM',
+          'International Director 2025–2027',
+          'Toastmasters International',
+        ],
+      },
     },
     {
-      name: 'Aaron Beverly',
+      name: 'Aaron W. Beverly',
       credentials: '2019 World Champion of Public Speaking',
-      blurb: 'Aaron Beverly is a public speaking strategist, international speaker, and the 2019 World Champion of Public Speaking. He helps individuals and organizations close the gap between what they believe they’re saying and what they’re actually saying.',
+      tagline: 'Public Speaking Strategist | Storyteller | Keynote Speaker | Trainer',
+      bio: [
+        'Aaron Beverly is a public speaking strategist, international speaker, and the 2019 World Champion of Public Speaking. He helps individuals and organizations close the gap between what they believe they’re saying and what they’re actually saying.',
+        'Before becoming a world champion speaker, Aaron spent more than 15 years in banking and finance at Citi, J.P. Morgan Chase, and Deloitte. He became known for identifying communication gaps, translating complex ideas into clear, actionable messages, and communicating effectively in demanding professional environments.',
+        {
+          heading: 'Speaking Achievements',
+          items: [
+            '2019 World Champion of Public Speaking, emerging from over 30,000 competitors worldwide',
+            'Five-time International Speech Contest semifinalist',
+            'Two-time World Championship finalist, placing second in 2016',
+            'Moth Story Slam winner',
+          ],
+        },
+        'Once crippled with social anxiety along with a deep fear of public speaking, Aaron learned practical ways to turn his greatest weakness into his greatest asset. Today, Aaron “helps unheard voices get heard and untold stories get told.”',
+        'Aaron has delivered keynotes and workshops for Fortune 100 companies, universities, and professional organizations across more than 10 countries. He combines corporate leadership experience, elite-level speaking achievement, and practical communication tools to help people perform when it matters most.',
+      ],
       photo: 'Picture_Aaron.jpeg',
+      photoFraming: 'origin-[45%_3%] scale-[1.9]',
     },
     {
       name: 'Mandarin Workshop Speaker',
