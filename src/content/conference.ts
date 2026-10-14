@@ -40,8 +40,10 @@ export interface WhyAttendItem {
 export interface Speaker {
   name: string
   credentials: string
-  session: string
+  session?: string
   blurb: string
+  /** File in public/; omitted → placeholder avatar. */
+  photo?: string
 }
 
 export interface AgendaItem {
@@ -201,14 +203,26 @@ export const CONFERENCE: ConferenceContent = {
     },
   ],
 
-  /* [MOCK] — invented speakers, kept distinct from the seeded demo attendees
-     so a demo never shows the same fake person on stage and in the queue. */
+  /* [REAL] — Hani and Aaron confirmed by the committee (14 Oct 2026); the
+     Mandarin workshop speaker is still TBA. Card order = array order. */
   speakers: [
     {
       name: 'Hani Nur Zaihanirah Zaini, DTM. ',
       credentials: 'International Director,',
-      session: 'Leading Beyond the Lectern',
+
       blurb: 'She made history as the first Sarawakian woman elected to the Toastmasters International Board of Directors. She brings us into her transformative journey as a leader.',
+      photo: 'Picture_Hani.jpeg',
+    },
+    {
+      name: 'Aaron Beverly',
+      credentials: '2019 World Champion of Public Speaking',
+      blurb: 'Aaron Beverly is a public speaking strategist, international speaker, and the 2019 World Champion of Public Speaking. He helps individuals and organizations close the gap between what they believe they’re saying and what they’re actually saying.',
+      photo: 'Picture_Aaron.jpeg',
+    },
+    {
+      name: 'Mandarin Workshop Speaker',
+      credentials: 'To be announced',
+      blurb: 'Details coming up soon.',
     },
     // {
     //   name: 'Rizal Hamid',
