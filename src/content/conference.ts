@@ -217,7 +217,7 @@ export const CONFERENCE: ConferenceContent = {
      Mandarin workshop speaker is still TBA. Card order = array order. */
   speakers: [
     {
-      name: 'Hani Nur Zaihanirah Zaini, DTM. ',
+      name: 'Hani Nur Zaihanirah Zaini, DTM',
       credentials: 'International Director',
       // Square copy of Picture_Hani.jpeg with the backdrop extended so the
       // circle crop keeps her hair; the original is too tall and narrow.
