@@ -40,7 +40,7 @@ export default function Speakers() {
       </div>
       {/* Honest for a page whose speakers are placeholders — and stays true
           once real ones land, since line-ups always grow. */}
-      <p className="mt-4 text-[15px] text-muted-fg">More speakers to be announced.</p>
+      <p className="mt-4 text-[15px] text-muted-fg">Workshop details coming soon.</p>
     </Section>
   )
 }
