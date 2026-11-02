@@ -364,7 +364,7 @@ export const CONFERENCE: ConferenceContent = {
         chair: 'Julie Ong, DTM',
         team: ['Kathyrn Galatis', 'Robekka Purba', 'Edmund Chew, DTM'],
       },
-      { name: 'Publicity', chair: 'Goh Shu Ching', team: ['Niza Khalil , DTM','Suzanne Loh', 'Gordon Yit'] },
+      { name: 'Publicity', chair: 'Goh Shu Ching', team: ['Suzanne Loh', 'Gordon Yit'] },
       {
         name: 'Marketing',
         chair: 'Lim Jun Jie, DTM',
